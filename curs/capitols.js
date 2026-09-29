@@ -32,16 +32,16 @@ function injectCursLogo() {
 
 const CAPITOLS_DATA = [
   { num: 1,  titol: 'Coneix en Karel',           arxiu: 'capitol-1.html'  },
-  { num: 2,  titol: 'Agafa i deixa',             arxiu: 'capitol-2.html'  },
+  { num: 2,  titol: 'Recollir i deixar',         arxiu: 'capitol-2.html'  },
   { num: 3,  titol: "Gestió d'errors en un codi", arxiu: 'capitol-3.html' },
   { num: 4,  titol: 'Repeteix',                  arxiu: 'capitol-4.html'  },
-  { num: 5,  titol: 'Procediments',              arxiu: 'capitol-5.html'  },
+  { num: 5,  titol: 'Funcions',                  arxiu: 'capitol-5.html'  },
   { num: 6,  titol: 'Descomposició',             arxiu: 'capitol-6.html'  },
   { num: 7,  titol: 'Condicionals',              arxiu: 'capitol-7.html'  },
   { num: 8,  titol: 'Mentre',                    arxiu: 'capitol-8.html'  },
   { num: 9,  titol: 'Combinant condicions',      arxiu: 'capitol-9.html'  },
-  { num: 10, titol: 'Escriure codi net',         arxiu: 'capitol-10.html' },
-  { num: 'futur', titol: 'Resum',  arxiu: 'capitol-futur.html' },
+  { num: 10, titol: 'Codi net',                  arxiu: 'capitol-10.html' },
+  { num: 'futur', titol: "D'en Karel al Python", arxiu: 'capitol-futur.html' },
 ];
 
 
@@ -186,6 +186,25 @@ function _readCode(iframe) {
   } catch { return null; }
 }
 
+// ── Botó «Pantalla completa» per a un iframe ──
+// A pantalla completa l'editor i el món ocupen tota la pantalla (molt útil
+// en portàtils petits i tauletes). Es surt amb Esc, amb el gest «enrere»
+// de la tauleta o amb el botó «✕ Surt» que apareix a dins del simulador.
+function _fullscreenButton(iframe) {
+  const enabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+  if (!enabled) return null;
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'fs-btn';
+  b.textContent = '⛶ Pantalla completa';
+  b.title = 'Obre el simulador a pantalla completa (Esc per sortir)';
+  b.addEventListener('click', () => {
+    const req = iframe.requestFullscreen || iframe.webkitRequestFullscreen;
+    if (req) Promise.resolve(req.call(iframe)).catch(() => {});
+  });
+  return b;
+}
+
 // Un objectiu de data-goals pot ser un string o un array d'alternatives
 function _goalStr(g) {
   return Array.isArray(g) ? g.join('\n') : (g || '');
@@ -266,15 +285,8 @@ function _renderMultiMon(div, simIndex) {
   btns.forEach(b => bar.appendChild(b));
   wrap.appendChild(bar);
 
-  // Contenidor relatiu per poder superposar el label de món actiu
   const iframeWrap = document.createElement('div');
   iframeWrap.className = 'simulador-iframe-wrap';
-
-  // Label del món actiu, flotant a dalt-dreta (sobre el mapa)
-  const monActiveLabel = document.createElement('div');
-  monActiveLabel.className = 'mon-active-label';
-  monActiveLabel.textContent = 'Món 1';
-  iframeWrap.appendChild(monActiveLabel);
 
   const srcFor = (i, cur) => _iframeSrc({
     map: maps[i], code, goal: goals[i], goalId: goalIds[i], readonly,
@@ -291,6 +303,11 @@ function _renderMultiMon(div, simIndex) {
   iframe.src = srcFor(0, null);
   iframeWrap.appendChild(iframe);
   wrap.appendChild(iframeWrap);
+
+  if (!readonly) {
+    const fs = _fullscreenButton(iframe);
+    if (fs) bar.appendChild(fs);
+  }
 
   // Feedback global: "X / N mons superats"
   const fbGlobal = document.createElement('div');
@@ -312,7 +329,6 @@ function _renderMultiMon(div, simIndex) {
     const currentCode = _readCode(iframe);
     btns[activeIdx].classList.remove('mon-btn--active');
     btns[newIdx].classList.add('mon-btn--active');
-    monActiveLabel.textContent = `Món ${newIdx + 1}`;
     activeIdx = newIdx;
     iframe.src = srcFor(newIdx, currentCode);
   }
@@ -417,11 +433,16 @@ function _renderSingleMon(div, simIndex) {
 
   const wrap = document.createElement('div');
   wrap.className = 'simulador-wrap';
-  if (label) {
+  const fs = readonly ? null : _fullscreenButton(iframe);
+  if (label || fs) {
+    const head = document.createElement('div');
+    head.className = 'simulador-head';
     const badge = document.createElement('span');
     badge.className = `simulador-badge simulador-badge--${label.toLowerCase()}`;
     badge.textContent = label;
-    wrap.appendChild(badge);
+    head.appendChild(badge);
+    if (fs) head.appendChild(fs);
+    wrap.appendChild(head);
   }
   wrap.appendChild(iframe);
 
@@ -615,15 +636,15 @@ function initGlossariCurs() {
           <h3>Condicions</h3>
           <p class="glossari-hint">Sempre amb parèntesis <code>()</code> — s'usen dins de <code>if</code> i <code>while</code></p>
           <div class="glossari-grid">
-            <code>front_is_clear()</code><span>El camí del davant és lliure</span>
-            <code>front_is_blocked()</code><span>Hi ha una roca al davant</span>
+            <code>front_is_clear()</code><span>Pot avançar: al davant no hi ha roca ni la vora del món</span>
+            <code>front_is_blocked()</code><span>Al davant hi ha una roca o la vora del món</span>
             <code>left_is_clear()</code><span>L'esquerra és lliure</span>
-            <code>left_is_blocked()</code><span>Hi ha una roca a l'esquerra</span>
+            <code>left_is_blocked()</code><span>A l'esquerra hi ha una roca o la vora</span>
             <code>right_is_clear()</code><span>La dreta és lliure</span>
-            <code>right_is_blocked()</code><span>Hi ha una roca a la dreta</span>
+            <code>right_is_blocked()</code><span>A la dreta hi ha una roca o la vora</span>
             <code>pearl_here()</code><span>Hi ha una perla aquí</span>
             <code>bag_is_empty()</code><span>La motxilla és buida</span>
-            <code>bag_is_full()</code><span>La motxilla té perles</span>
+            <code>bag_has_pearls()</code><span>La motxilla té alguna perla</span>
           </div>
         </div>
 
@@ -649,7 +670,7 @@ else:
           <h3>Recorda</h3>
           <div class="glossari-rule">① Les instruccions i condicions porten <code>()</code> sempre</div>
           <div class="glossari-rule">② Després de <code>if</code>, <code>while</code>, <code>for</code>, <code>def</code> cal posar <code>:</code></div>
-          <div class="glossari-rule">③ El codi dins d'un bloc s'ha d'indentar (4 espais)</div>
+          <div class="glossari-rule">③ El codi dins d'un bloc s'ha d'indentar (4 espais). En prémer Enter després de <code>:</code> l'editor ja ho fa</div>
         </div>
 
       </div>

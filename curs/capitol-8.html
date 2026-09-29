@@ -148,7 +148,7 @@ while front_is_clear():
 
         <ul>
           <li><code>while front_is_clear():</code> — avança mentre el camí estigui lliure.</li>
-          <li><code>while pearl_here():</code> — continua mentre hi hagi perles a la casella.</li>
+          <li><code>while pearl_here():</code> — continua mentre hi hagi una perla a la casella on és en Karel (cada casella en pot tenir com a màxim una).</li>
           <li><code>while not bag_is_empty():</code> — continua mentre la motxilla tingui, com a mínim, una perla.</li>
         </ul>
 
@@ -206,7 +206,7 @@ while front_is_clear():
         <div class="exercise-enunciat">
           En Karel és a l'extrem esquerre d'un corredor de llargada desconeguda. Hi ha perles disperses per algunes caselles, però no saps en quines ni quantes en total. En Karel ha de recórrer tot el corredor d'un extrem a l'altre i recollir totes les perles que trobi pel camí. Després ha de donar mitja volta i deixar totes les perles, a mesura que va tornant, totes en caselles consecutives.
           <br><br>
-          <strong>Pista:</strong> usa un <code>while front_is_clear():</code> com a iteració principal. Dins d'aquesta iteració, comprova amb <code>if pearl_here():</code> si cal recollir una perla i, si n'hi ha, la reculls amb <code>grab()</code>. Abans de tornar a començar la iteració, avances una casella fent <code>move()</code>. Ara hauràs arribat al final, quan surtis del <code>while</code>: fes mitja volta amb <code>turn_around()</code>. Llavors, ves tornant i a cada pas, si encara tens perles a la motxilla, fas un <code>drop()</code>. Per saber si tens perles, has de fer servir la pregunta <code>bag_is_full()</code>.
+          <strong>Pista:</strong> usa un <code>while front_is_clear():</code> com a iteració principal. Dins d'aquesta iteració, comprova amb <code>if pearl_here():</code> si cal recollir una perla i, si n'hi ha, la reculls amb <code>grab()</code>. Abans de tornar a començar la iteració, avances una casella fent <code>move()</code>. Ara hauràs arribat al final, quan surtis del <code>while</code>: fes mitja volta amb <code>turn_around()</code>. Llavors, ves tornant i a cada pas, si encara tens perles a la motxilla, fas un <code>drop()</code>. Per saber si tens perles, has de fer servir la pregunta <code>bag_has_pearls()</code>.
         </div>
 
         <div class="simulador"
@@ -253,7 +253,7 @@ while front_is_clear():
     move()
 turn_around()
 while front_is_clear():
-    if bag_is_full():
+    if bag_has_pearls():
         drop()
     move()
 </solucio>
@@ -266,7 +266,7 @@ while front_is_clear():
 turn_around()
 while front_is_clear():
     move()
-    if bag_is_full():
+    if bag_has_pearls():
         drop()
 </solucio-incorrecta>
 -->

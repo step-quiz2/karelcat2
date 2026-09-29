@@ -176,6 +176,22 @@
     });
   }
 
+  // «✕ Surt»: quan la pàgina del curs posa aquest iframe a pantalla completa
+  try {
+    const pd = window.parent !== window ? window.parent.document : null;
+    if (pd && (pd.fullscreenEnabled || pd.webkitFullscreenEnabled)) {
+      addToolbarButton('btn-exit-fs', K.t('ui.exit_fs'), K.t('ui.exit_fs_title'), () => {
+        const exit = pd.exitFullscreen || pd.webkitExitFullscreen;
+        if (exit) exit.call(pd);
+      });
+      const exitBtn = document.getElementById('btn-exit-fs');
+      const sync = () => { exitBtn.hidden = !(pd.fullscreenElement || pd.webkitFullscreenElement); };
+      pd.addEventListener('fullscreenchange', sync);
+      pd.addEventListener('webkitfullscreenchange', sync);
+      sync();
+    }
+  } catch (e) { /* pare d'un altre origen: sense botó */ }
+
   // 6) Auto-escala del grid en redimensionar
   const worldArea = document.getElementById('world-area');
   if (worldArea) {

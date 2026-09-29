@@ -35,7 +35,7 @@ move()  turn_left()  turn_right()  turn_around()  grab()  drop()
 front_is_clear()  front_is_blocked()
 left_is_clear()   left_is_blocked()
 right_is_clear()  right_is_blocked()
-pearl_here()      bag_is_empty()      bag_is_full()
+pearl_here()      bag_is_empty()      bag_has_pearls()
 
 # Estructures de control
 for _ in range(N):

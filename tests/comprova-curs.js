@@ -79,9 +79,10 @@ const K = loadEngine();
 // 2. Proves del motor
 // ════════════════════════════════════════════════════════
 
-// Cada cas: [descripció, codi, esperat]
+// Cada cas: [descripció, codi, esperat, mapa (opcional)]
 //   esperat = { final: 'csv' }        → s'executa bé i acaba en aquest estat
 //   esperat = { error: /regex/ }      → dona un error que coincideix amb la regex
+//   esperat.maxSteps                  → i no ha fet més d'aquestes accions
 const MAP = 'K>,.,.,.,.,.';
 const ENGINE_CASES = [
   ['for en una sola línia',            'for _ in range(3): move()\n',                    { final: '.,.,.,K>,.,.' }],
@@ -119,13 +120,22 @@ const ENGINE_CASES = [
   ['def dins d\'un bloc',              'if True:\n    def f():\n        move()\n',       { error: /fora de qualsevol bloc/ }],
   ['caràcter no vàlid',                'x = 3\n',                                          { error: /el caràcter '='/ }],
   ['xoc amb la paret',                 'for i in range(9):\n    move()\n',                { error: /En Karel ha xocat/ }],
+  ['bucle infinit detectat de seguida', 'while front_is_clear():\n    turn_left()\n',       { error: /no acabarà mai/, maxSteps: 8 }, '.,.,.|.,K>,.|.,.,.'],
+  ['anada i tornada infinita',         'while True:\n    move()\n    turn_around()\n',   { error: /no acabarà mai/, maxSteps: 8 }, '.,.,.|.,K>,.|.,.,.'],
+  ['bucle llarg però finit',           'while not pearl_here():\n    move()\n    if front_is_blocked():\n        turn_right()\n', { final: '.,.,.|K^A,.,.|.,.,.' }, 'K>,.,.|A,.,.|.,.,.'],
+  ['bag_has_pearls()',                 'grab()\nif bag_has_pearls():\n    move()\n',   { final: '.,K>,.' }, 'K>A,.,.'],
+  ['bag_is_full() (nom antic) funciona', 'grab()\nif bag_is_full():\n    move()\n',    { final: '.,K>,.' }, 'K>A,.,.'],
 ];
 
 function engineTests() {
   console.log(c.bold('\nMotor (tokenitzador, parser i intèrpret)'));
   let okCount = 0;
-  for (const [desc, code, exp] of ENGINE_CASES) {
-    const r = K.runHeadless({ map: MAP, code });
+  for (const [desc, code, exp, map] of ENGINE_CASES) {
+    const r = K.runHeadless({ map: map || MAP, code });
+    if (exp.maxSteps !== undefined && r.steps > exp.maxSteps) {
+      fail('motor', `${desc}: ha fet ${r.steps} accions (màxim esperat: ${exp.maxSteps})`);
+      continue;
+    }
     if (exp.final !== undefined) {
       if (r.ok && r.finalCSV === exp.final) { pass(); okCount++; }
       else fail('motor', `${desc}: esperava acabar a '${exp.final}' però ${r.ok ? `ha acabat a '${r.finalCSV}'` : `ha donat l'error «${r.message}»`}`);
