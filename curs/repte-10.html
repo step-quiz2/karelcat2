@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repte 10 — El detector | Karelcat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="curs.css">
+  <style>
+    .dificultat-badge { display:inline-flex;align-items:center;gap:0.35rem;font-size:0.78rem;font-weight:700;letter-spacing:0.04em;padding:0.2rem 0.65rem;border-radius:999px;vertical-align:middle;margin-left:0.6rem; }
+    .dificultat-facil { background:#d1fae5;color:#065f46; }
+    .dificultat-intermedi { background:#fef3c7;color:#92400e; }
+    .dificultat-dificil { background:#fee2e2;color:#991b1b; }
+    .consell-box { background:#f0f9ff;border-left:4px solid #0284c7;border-radius:0 8px 8px 0;padding:0.9rem 1.1rem;margin:1.2rem 0;font-size:0.93rem;color:#0c4a6e; }
+    .consell-box strong { display:block;margin-bottom:0.3rem;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;color:#0284c7; }
+  </style>
+  <link rel="stylesheet" href="../nav.css">
+<style>
+  /* ── Títol centrat al header ── */
+  .curs-header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    white-space: nowrap;
+    pointer-events: none;
+    flex: none;
+    overflow: visible;
+    text-overflow: clip;
+  }
+</style>
+</head>
+<body class="curs-light">
+
+
+<header class="curs-header">
+  <button id="sidebar-toggle" aria-label="Mostra/amaga els capítols" aria-expanded="false">☰</button>
+  <span class="curs-header-logo"><span class="logo-icon"></span>Karel</span>
+  <span class="karel-nav-sep"></span>
+    <nav class="karel-nav" id="karel-nav">
+      <a href="capitol-1.html" class="karel-nav-link">Capítols</a>
+      <a href="repte-1.html" class="karel-nav-link active">Reptes</a>
+      <a href="../simulador.html" class="karel-nav-link">Simulador</a>
+      <a href="../edit-mapa.html" class="karel-nav-link">Editor</a>
+    </nav>
+
+  <div class="curs-header-actions"><button class="karel-clear-btn" onclick="karelClearProgress()" title="Netejar tot el progrés">Netejar històric</button></div>
+</header>
+
+
+<div class="curs-layout">
+
+  <div id="sidebar-overlay" aria-hidden="true"></div>
+
+  <nav id="sidebar" class="curs-sidebar" aria-label="Reptes del curs">
+        <div class="sidebar-global-nav" aria-label="Navegació global">
+      <a href="capitol-1.html" class="sgn-link">Capítols</a>
+      <a href="repte-1.html" class="sgn-link sgn-active">Reptes</a>
+      <a href="../simulador.html" class="sgn-link">Simulador</a>
+      <a href="../edit-mapa.html" class="sgn-link">Editor</a>
+    </div>
+<div id="sidebar-nav"></div>
+  </nav>
+
+  <main id="chapter-content" class="curs-content" tabindex="-1">
+    <div class="chapter-content-inner">
+
+      <header class="chapter-header">
+        <h1>Reptes</h1>
+      </header>
+
+
+      <section class="chapter-section chapter-exercise">
+
+        <h2>
+          Repte 10 — El detector
+          <span class="dificultat-badge dificultat-dificil">★★★ Avançat</span>
+        </h2>
+
+        <div class="exercise-enunciat">
+          En Karel avança per un passadís horitzontal, al llarg del qual hi ha petits
+          <strong>forats</strong>, que són obertures d'una sola casella cap al Nord o cap al Sud. En alguns forats hi ha una perla, en d'altres no..<br><br>
+          <strong>La missió d'en Karel</strong>: recórrer el corredor d'un extrem a l'altre i recollir les perles de dins de totes les alcoves<br>
+          Escriu un programa que funcioni per a qualsevol longitud de corredor i qualsevol distribució de forats i de perles.
+        </div>
+
+        <details class="consell-box">
+          <summary><strong>💡 Pista — com detectar una alcova?</strong></summary>
+          <div class="consell-body">
+Com que un forat és una obertura lateral, pots fer servir les instruccions: <code>left_is_clear()</code> o
+<code>right_is_clear()</code>.<br>
+Quan detectis un forat, entra-hi, comprova si hi ha perla (en aquest cas, l'agafes), i torna al corredor.
+</div>
+        </details>
+
+        <details class="consell-box">
+          <summary><strong>💡 Pista — explora_nord() i explora_sud()</strong></summary>
+          <div class="consell-body">
+Defineix dues funcions que entrin al forat, recullin la perla si n'hi ha,
+i retornin en Karel al corredor mirant Est.
+</div>
+        </details>
+
+        <details class="consell-box">
+          <summary><strong>💡 Pista — if separats, no elif</strong></summary>
+          <div class="consell-body">
+A cada casella, en Karel ha de comprovar si hi ha forat al nord <strong>i també</strong> si hi ha forat al sud. Les dues comprovacions són independents: una casella podria tenir obertura als dos costats. Per tant, necessites dos <code>if</code> separats, i no seria bona idea fer servir un <code>elif</code>, en aquest cas.
+</div>
+        </details>
+
+        <div class="simulador"
+             data-maps='[".,.,A,.,.,.|K>,.,.,.,.,.|.,A,.,.,.,.", "A,.,.,.,.,.,.,.|K>,.,.,.,.,.,.,.|.,.,.,A,.,.,A,.", ".,.,A,.,.,.,.,.,.,.|K>,.,.,.,.,.,.,.,.,.|.,A,.,.,.,A,.,.,A,."]'
+             data-goals='[".,.,.,.,.,.|.,.,.,.,.,K>|.,.,.,.,.,.", ".,.,.,.,.,.,.,.|.,.,.,.,.,.,.,K>|.,.,.,.,.,.,.,.", ".,.,.,.,.,.,.,.,.,.|.,.,.,.,.,.,.,.,.,K>|.,.,.,.,.,.,.,.,.,." ]'
+             data-labels='["6 caselles", "8 caselles", "10 caselles"]'
+             data-code="def explora_nord():
+
+
+
+def explora_sud():
+
+
+# ── Programa principal ──
+
+
+# Atenció, no oblidem comprovar l'última casella de totes
+"
+             data-title="El mateix codi ha de funcionar per als tres corredors. Atenció a l'error de límit!"
+             data-height="420">
+        </div>
+
+      </section>
+
+
+      <nav class="chapter-nav" aria-label="Navegació entre capítols">
+        <a href="repte-9.html" class="btn-nav btn-nav--prev">← Repte 9</a>
+        <a href="repte-11.html" class="btn-nav btn-nav--next">Repte 11 →</a>
+      </nav>
+
+    </div>
+  </main>
+
+</div>
+
+
+<!--
+  ════════════════════════════════════════════════════════
+  SOLUCIÓ DE REFERÈNCIA — NOMÉS PER AL PROFESSOR
+
+def explora_nord():
+    turn_left()
+    move()
+    if pearl_here():
+        grab()
+    turn_around()
+    move()
+    turn_left()
+
+def explora_sud():
+    turn_right()
+    move()
+    if pearl_here():
+        grab()
+    turn_around()
+    move()
+    turn_right()
+
+while front_is_clear():
+    if left_is_clear():
+        explora_nord()
+    if right_is_clear():
+        explora_sud()
+    move()
+
+if left_is_clear():
+    explora_nord()
+if right_is_clear():
+    explora_sud()
+
+  Clau pedagògica:
+  1. Pre/postcondicions estrictes: les funcions explora_* deixen
+     En Karel on el van trobar.
+  2. Error de límit: l'última casella no es comprova dins el while.
+  3. if separats vs elif: les alcoves nord i sud són independents.
+  ════════════════════════════════════════════════════════
+-->
+
+<script>const CURRENT_REPTE = 10;</script>
+<script src="progress.js"></script>
+  <script src="capitols.js"></script>
+<script>
+  injectCursLogo();
+  renderReptesSidebar(CURRENT_REPTE);
+  renderSimuladors();
+  initSidebarToggle();
+</script>
+
+<script>
+function karelClearProgress() {
+  if (confirm('Vols netejar totes les anotacions dels capítols llegits i dels reptes superats?')) {
+    KProgress.clear();
+    location.reload();
+  }
+}
+</script>
+<script src="../footer.js"></script>
+</body>
+</html>
