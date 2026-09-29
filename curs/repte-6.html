@@ -196,7 +196,7 @@ fora del <code>while</code> per no perdre la casella del sostre.
         <!-- Simulador multi-món (DRY): un sol editor, tres mons de test -->
         <div class="simulador"
              data-maps='[".,.,.,.,.,.,.|.,.,.,.,.,.,.|K>,.,.,A,.,.,A", ".,.,.,.,.,.,.|.,.,.,.,.,.,.|.,.,.,.,.,.,.|K>,.,.,A,.,.,A", ".,.,.,.,.,.,.,.,.,.|.,.,.,.,.,.,.,.,.,.|.,.,.,.,.,.,.,.,.,.|K>,.,.,A,.,.,A,.,.,A"]'
-             data-goals='["A,.,.,A,.,.,A|A,.,.,A,.,.,A|A,.,.,A,.,.,K>", "A,.,.,A,.,.,A|A,.,.,A,.,.,A|A,.,.,A,.,.,A|A,.,.,A,.,.,K>", "A,.,.,A,.,.,A,.,.,A|A,.,.,A,.,.,A,.,.,A|A,.,.,A,.,.,A,.,.,A|A,.,.,A,.,.,A,.,.,K>"]'
+             data-goals='["A,.,.,A,.,.,A|A,.,.,A,.,.,A|A,.,.,A,.,.,K>A", "A,.,.,A,.,.,A|A,.,.,A,.,.,A|A,.,.,A,.,.,A|A,.,.,A,.,.,K>A", "A,.,.,A,.,.,A,.,.,A|A,.,.,A,.,.,A,.,.,A|A,.,.,A,.,.,A,.,.,A|A,.,.,A,.,.,A,.,.,K>A"]'
              data-labels='["7 × 3 · 3 torres", "7 × 4 · 3 torres", "10 × 4 · 4 torres"]'
              data-bag="99"
              data-code="# ── omple_columna ──
@@ -235,6 +235,7 @@ def omple_columna():
   No apareix en cap data-code visible a l'alumne.
   ════════════════════════════════════════════════════════
 
+<solucio>
 def omple_columna():
     turn_left()
     while front_is_clear():
@@ -257,6 +258,30 @@ omple_columna()
 while front_is_clear():
     avança_a_seguent()
     omple_columna()
+</solucio>
+
+<solucio-incorrecta motiu="oblida l'error de límit del sostre">
+def omple_columna():
+    turn_left()
+    while front_is_clear():
+        if not pearl_here():
+            drop()
+        move()
+    turn_around()
+    while front_is_clear():
+        move()
+    turn_left()
+
+def avança_a_seguent():
+    move()
+    move()
+    move()
+
+omple_columna()
+while front_is_clear():
+    avança_a_seguent()
+    omple_columna()
+</solucio-incorrecta>
 
   Traça d'execució (Test A — 7×3, torres a cols 0, 3, 6):
     Inici: (0,2) Est   [y=2 = fila inferior, y=0 = sostre]

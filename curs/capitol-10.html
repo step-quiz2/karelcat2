@@ -573,6 +573,66 @@ ff()</code></pre>
 </div>
 
 
+<!--
+  ════════════════════════════════════════════════════════
+  SOLUCIONS DE REFERÈNCIA — NOMÉS PER AL PROFESSOR
+  (El test tests/comprova-curs.js executa el codi entre les marques.)
+  ════════════════════════════════════════════════════════
+
+<solucio exercici="1">
+def avançar_i_recollir():
+    move()
+    if pearl_here():
+        grab()
+
+while front_is_clear():
+    avançar_i_recollir()
+</solucio>
+
+<solucio exercici="2">
+def avançar_fins_a_paret():
+    while front_is_clear():
+        move()
+
+def recollir_si_hi_ha_perla():
+    if pearl_here():
+        grab()
+
+avançar_fins_a_paret()
+turn_right()
+move()
+recollir_si_hi_ha_perla()
+</solucio>
+
+<solucio-incorrecta exercici="2" motiu="arriba a la cantonada però no recull la perla">
+def avançar_fins_a_paret():
+    while front_is_clear():
+        move()
+
+avançar_fins_a_paret()
+turn_right()
+move()
+</solucio-incorrecta>
+
+<solucio exercici="3">
+def recollir_si_hi_ha_perla():
+    if pearl_here():
+        grab()
+
+def deixar_si_en_queden():
+    if not bag_is_empty():
+        drop()
+
+while front_is_clear():
+    move()
+    recollir_si_hi_ha_perla()
+turn_around()
+while front_is_clear():
+    move()
+    deixar_si_en_queden()
+</solucio>
+-->
+
 <script>const CURRENT_CAPITOL = 10;</script>
 <script src="progress.js"></script>
 <script src="capitols.js"></script>

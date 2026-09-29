@@ -42,7 +42,7 @@ function* runStmt(node) {
     case 'repeat': {
       const MAX_REPEAT = 10000;
       if (node.count > MAX_REPEAT) {
-        yield { type: 'error', code: 'inf_loop', msg: K.t('log.inf_loop'), line: node.line };
+        yield { type: 'error', code: 'too_many', msg: K.t('log.too_many'), line: node.line };
         return;
       }
       for (let i = 0; i < node.count; i++) {

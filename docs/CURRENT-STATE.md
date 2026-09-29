@@ -124,8 +124,17 @@ def nom():
     turn_left()
 ```
 
-**Indentació:** 2 espais per nivell (4 també acceptat; el tokenitzador detecta automàticament la unitat mínima).
+**Indentació:** les mateixes regles que Python. El tokenitzador manté una pila de
+nivells i emet `INDENT`/`DEDENT`: es pot indentar amb 2, 3 o 4 espais (o amb tabulador,
+que compta fins al següent múltiple de 4), però dins d'un bloc totes les línies han de
+tenir exactament la mateixa indentació. Cap línia s'ignora en silenci: una línia massa
+indentada, una indentació que no coincideix amb cap nivell anterior o un bloc buit són
+errors de sintaxi amb número de línia.
+**Una instrucció per línia**, o diverses separades per `;` (`move(); move()`).
+Després de `:` hi pot anar una instrucció simple a la mateixa línia (`for i in range(3): move()`).
 **Comentaris:** `#` fins al final de línia.
+**Noms:** poden portar accents i ela geminada (`col·loca_perla`). Abans d'executar, es comprova
+que totes les funcions cridades existeixin, amb suggeriments («Volies dir move()?»).
 
 ### Decisions de semàntica importants
 - `grab()` i `drop()` operen sobre la **casella actual** de Karel (no la del davant).
@@ -151,14 +160,28 @@ K>,.,A,P|.,.,.,.|.,.,.,P
 | `K^` | Karel mirant Nord |
 | `Kv` | Karel mirant Sud |
 | `K<` | Karel mirant Oest |
+| `K>A`, `K^A`… | Karel damunt d'una casella amb perla |
 | `A` | Perla (recollible amb `grab()`) |
 | `P` | Roca (obstacle infranquejable) |
 
 **La primera fila** de la cadena és la **fila superior** del món.
 **La última fila** és la fila inferior (on normalment comença en Karel).
 
-**Separador de files: `|` (pipe).** `js/world.js` fa `.split('|')` a la línia 8.
-Mai usar `\n`, `\\n` ni salts de línia reals — el mapa fallaria silenciosament.
+**Separador de files: `|` (pipe).** `js/world.js` fa `.split('|')`.
+Mai usar `\n`, `\\n` ni salts de línia reals dins d'un mapa (el test automàtic ho detecta).
+
+### Format dels objectius (`data-goal` / `data-goals`)
+
+Mateix format que els mapes, amb aquestes regles (`K.parseGoal` i `K.compareGoal` a `js/world.js`):
+
+- Es compara el contingut de **totes** les caselles, també la de sota en Karel
+  (`K>A` = en Karel acaba damunt d'una perla; `K>` = hi acaba i la casella és buida).
+- Si l'objectiu té una `K`, en Karel ha d'acabar en aquella casella (la direcció no es mira).
+- Si l'objectiu **no té cap K**, no es comprova on acaba en Karel (només les perles).
+- Opcions al final, separades per `;`: `;motxilla=N` (ha d'acabar amb N perles a la
+  motxilla) i `;direccio` (també es comprova cap a on mira).
+- **Alternatives:** diversos objectius separats per un salt de línia; n'hi ha prou amb
+  un. A `data-goals` (JSON) un element pot ser un array: `[".,A,.", [".,A,.,.", ".,.,A,."]]`.
 
 ### Atributs HTML dels simuladors
 
@@ -186,12 +209,26 @@ Mai usar `\n`, `\\n` ni salts de línia reals — el mapa fallaria silenciosamen
 </div>
 ```
 
+Altres atributs: `data-bags='[3,5,7]'` (motxilla per món), `data-readonly="true"`
+(exemple no editable), `data-error="sintaxi"` o `"execucio"` (exemple que mostra un
+error a propòsit; el test comprova que l'error es produeixi).
+
+### Solucions de referència (verificades pel test automàtic)
+
+Cada exercici editable amb objectiu té la seva solució dins d'un comentari HTML de la
+mateixa pàgina, entre les marques `<solucio>` i `</solucio>` (codi a la columna 0).
+Si la pàgina té més d'un exercici: `<solucio exercici="2">`. També s'hi poden posar
+errors típics de l'alumne que el verificador ha de detectar:
+`<solucio-incorrecta motiu="oblida l'última casella"> … </solucio-incorrecta>`.
+Vegeu la secció 16.
+
 ---
 
 ## 5. Arquitectura de fitxers i responsabilitats
 
 ```
-index.html          — Simulador lliure. HTML mínim: topbar + toolbar + editor + món.
+index.html          — Pàgina d'inici (4 targetes: curs, reptes, simulador, editor).
+simulador.html      — Simulador lliure i simulador incrustat als iframes del curs.
 style.css           — ~698 línies. Sense zombies des de la neteja (Categoria C).
 edit-mapa.html      — Editor visual de mapes (eina auxiliar, no és part del curs).
 
@@ -201,17 +238,20 @@ js/i18n.js          — K.CODE_LANGS (vocabulari codi) + K.UI_LANGS (textos UI).
                       Funcions K.t(key) i K.tf(key, vars).
 js/state.js         — K.state (estat centralitzat) + K.lang (tokens del parser actiu).
                       Funció K.applyCodeLang(lang).
-js/tokenizer.js     — Funció pura K.tokenize(code) → array de tokens.
-                      Detecta automàticament la unitat d'indentació.
-js/parser.js        — Classe Parser + K.parseCode(code) → AST o null.
-                      Suporta elif (cadena il·limitada), break, True/False.
+js/tokenizer.js     — Funció pura K.tokenize(code) → tokens, amb INDENT/DEDENT com Python.
+js/parser.js        — Classe Parser. K.parseProgram(code) → AST o llança KarelSyntaxError
+                      (pur, sense interfície). K.parseCode(code) → AST o null (mostra l'error).
+                      Suporta elif, break (només dins de bucles), True/False, ;, condicions
+                      entre parèntesis, i comprova els noms de funció abans d'executar.
 js/interpreter.js   — Generadors K.runStmts/K.runStmt → yield {cmd,line} | {type:'error'}.
                       Propaga break via flag _break en while i for.
-js/execution.js     — K.execAction, K.runProgram, K.stepProgram, K.stopProgram,
-                      K.resetKarel. Reset de _break a l'inici d'execució.
-js/world.js         — K.parseCSV (split per |), K.loadMapFromCSV, K.isRock,
-                      K.getCell, K.setCell, K.front(), K.evalCond (inclou left/right),
-                      K.worldToCSV, K.currentStateToCSV.
+js/execution.js     — K.applyCommand (pura), K.execAction, K.runProgram, K.stepProgram,
+                      K.stopProgram, K.resetKarel, K.runHeadless (executa un programa
+                      sencer en un altre món sense tocar la pantalla: tests i
+                      «Comprova tots els mons»), K.checkAllWorlds.
+js/world.js         — K.parseCSV (split per |, K>A), K.parseGoal, K.compareGoal,
+                      K.loadMapFromCSV, K.isRock, K.getCell, K.setCell, K.front(),
+                      K.evalCond (inclou left/right), K.worldToCSV, K.currentStateToCSV.
 js/renderer.js      — K.renderWorld (diferencial), K.renderWorldFull, K.updateStatus.
 js/editor.js        — Ressaltat sintàctic, numeració de línies, marca d'error,
                       autocompletat (Tab).
@@ -226,14 +266,18 @@ curs/index.html     — Índex del curs (10 capítols, estil Stanford).
 curs/capitol.html   — Plantilla HTML reutilitzable per a capítols (comentada).
 curs/capitol-1..10  — Els 10 capítols del curs. Tots implementats. ✅
 curs/repte-1..13    — Els 13 reptes del capítol 10. Tots implementats. ✅
-curs/capitols.js    — CAPITOLS_DATA (10) + REPTES_DATA (13) + renderSidebar() +
-                      renderSimuladors() + toggle mòbil.
+curs/capitols.js    — CAPITOLS_DATA + REPTES_DATA (amb el nombre de mons de cada repte) +
+                      renderSidebar() + renderSimuladors() + toggle mòbil + listener
+                      de missatges dels iframes.
+curs/progress.js    — KProgress: progrés de l'alumne a localStorage (vegeu 7.3).
 curs/curs.css       — Estils per a totes les pàgines del curs.
-curs/AI_INSTRUCTIONS.md — Instruccions tècniques per a IA sobre el format de mapes.
-curs/BRIEFING-REPTES.md — Estat detallat de cada repte (mapes, solucions, notes).
+curs/BRIEFING-REPTES.md — Estat detallat de cada repte (mapes, notes pedagògiques).
+
+tests/comprova-curs.js — Test automàtic de tot el curs (vegeu secció 16).
+.github/workflows/comprova-curs.yml — Executa el test a GitHub a cada push.
 ```
 
-**Ordre de càrrega a `index.html`** (crític — les dependències globals K.* s'han de
+**Ordre de càrrega a `simulador.html`** (crític — les dependències globals K.* s'han de
 carregar en aquest ordre):
 ```
 constants.js → i18n.js → state.js → tokenizer.js → parser.js →
@@ -243,7 +287,7 @@ execution.js → reptes.js → main.js
 
 ### Contractes verificats
 - **K.***: cada símbol `K.X` cridat des de qualsevol fitxer JS és definit en algun altre.
-- **HTML↔JS**: cada `getElementById` al JS apunta a un ID que existeix a `index.html`.
+- **HTML↔JS**: cada `getElementById` al JS apunta a un ID que existeix a `simulador.html`.
 - **Nomenclatura**: les paraules `wall` i `water` no apareixen en el codi amb significat semàntic. (La variable CSS `--cell-rock` a `style.css` designa l'obstacle; `wall` i `water` no s'usen com a termes del domini.)
 
 ---
@@ -313,29 +357,32 @@ Complementàriament, `escHtml(s)` escapa els quatre caràcters perillosos (`&`, 
 
 ### 7.3 Contracte postMessage entre iframes (`execution.js` + `curs/`)
 
-El simulador incrustat als capítols del curs s'executa dins d'un `<iframe>`. Quan acaba un programa, `execution.js` envia un missatge al pare:
-
-```js
-// Al final de l'execució (tick / doStep):
-notifyGoalResult(compareGoal(K.goalCSV));
-
-// La funció:
-function notifyGoalResult(success) {
-  if (!K.goalCSV || !K.goalId) return;
-  window.parent.postMessage(
-    { type: 'karel-result', goalId: K.goalId, success },
-    K.parentOrigin
-  );
-}
-```
-
-`K.parentOrigin` s'obté de `document.referrer` (no de `'*'`), cosa que evita enviar dades a orígens arbitraris. La pàgina del curs escolta `'message'` i actualitza el feedback visual de l'exercici.
+El simulador incrustat als capítols del curs s'executa dins d'un `<iframe>` i envia
+missatges a la pàgina del curs (`execution.js` → `capitols.js`). Tots porten
+`codeHash`, l'empremta del codi de l'editor (`K.codeHash`: ignora comentaris i línies buides).
 
 **Missatges possibles:**
-- `{ type: 'karel-result', goalId, success }` — resultat final (✓ o ✗)
-- `{ type: 'karel-clear', goalId }` — l'alumne ha modificat el codi o ha reiniciat; esborrar el feedback
+- `{ type: 'karel-ready',  goalId, codeHash }` — l'iframe s'ha carregat.
+- `{ type: 'karel-clear',  goalId, codeHash }` — l'alumne ha modificat el codi, ha reiniciat o torna a executar: s'esborra el feedback.
+- `{ type: 'karel-result', goalId, success, error, codeHash }` — ha acabat una execució (`error: true` si s'ha aturat per un error d'execució).
 
-`compareGoal(goalCSV)` compara la posició final de Karel (sense direcció) i el contingut de cada casella. No compara la direcció final: és una decisió de disseny explícita.
+`K.parentOrigin` s'obté de `document.referrer` (no de `'*'`, excepte si els fitxers
+s'obren des del disc, on l'origen és `null`). `capitols.js` ignora missatges d'altres orígens.
+
+**Reptes amb diversos mons:** cada món recorda amb quin `codeHash` s'ha superat. Quan
+arriba un missatge amb una empremta diferent, els mons superats amb un altre codi tornen a
+«○». Així «Tots els mons superats» vol dir que *el codi actual* els supera tots.
+El botó **«✓ Comprova tots els mons»** (dins l'iframe, paràmetre `worlds`) executa el
+codi a tots els mons amb `K.runHeadless` i envia un `karel-result` per a cada món.
+
+**Progrés (`curs/progress.js`):** `reptes[N] = { mons: [codeHash|null…], complet }`.
+Un repte és complet quan tots els mons s'han superat amb la mateixa empremta; un cop
+complet, no es desgrava. El format antic (`[true, false, true]`) es continua llegint.
+
+**Codi de l'alumne:** cada simulador editable del curs desa el codi a
+`localStorage['karel-code:<pàgina>:<núm. de simulador>']` (paràmetre `save`), i el botó
+**«⟲ Codi inicial»** el torna a l'esquelet original. El simulador lliure fa servir la
+clau `karel-code-v3` i els exercicis ja no la sobreescriuen.
 
 ### 7.4 Renderitzat diferencial (`renderer.js`)
 
@@ -350,15 +397,21 @@ Reconstrucció completa (`renderWorldFull`) només quan canvien les dimensions d
 Hi ha dos tipus d'errors diferenciats:
 
 **Errors de sintaxi** (detectats per `parser.js` / `parseCode`):
-- Llancen `KarelSyntaxError` dins del parser.
+- Llancen `KarelSyntaxError` dins del parser. Missatges a `K.UI_LANGS.ca.parse`.
+- Inclouen: indentació (inesperada, que no quadra, bloc buit), falten `:` o `()`,
+  més d'una instrucció per línia, `break` fora de bucle, `else` sense `if`, caràcters
+  no vàlids, funcions no definides o mal escrites (amb suggeriment), condicions usades
+  com a ordres i a l'inrevés, `def` dins d'un bloc o amb el nom d'una ordre.
 - Capturats pel `try/catch` de `parseCode`, que crida `K.logError` i `K.markErrorLine`.
 - Retornen `null` i el programa no arrenca.
 
 **Errors de runtime** (detectats per `interpreter.js` o `execution.js`):
 - L'intèrpret fa `yield { type: 'error', code, msg, line }` (no llança excepcions).
 - `execAction` detecta `step.type === 'error'` i crida `errStop`.
-- `errStop` crida `K.logError`, `K.markErrorLine`, `K.setStateUI('error')`, `stopProgram()`.
-- Errors de runtime possibles: `'rock'` (xoc), `'no_pearl'` (grab sense perla), `'bag_empty'` (drop sense perles a la motxilla), `'inf_loop'` (while amb guard > 50000), `'deep_rec'` (callDepth > 50), `'proc_undef'` (crida a procediment no definit).
+- `_runtimeError` crida `stopProgram()` i després `K.logError`, `K.markErrorLine`,
+  `K.setStateUI('error')` (en aquest ordre, perquè la línia de l'error quedi marcada) i
+  avisa la pàgina del curs (`karel-result` amb `error: true`).
+- Errors de runtime possibles: `'rock'` (xoc), `'no_pearl'` (grab sense perla), `'bag_empty'` (drop sense perles a la motxilla), `'inf_loop'` (while amb guard > 50000), `'too_many'` (range > 10.000), `'deep_rec'` (callDepth > 50), `'proc_undef'` (no hauria de passar: el parser ja ho comprova). `K.runHeadless` afegeix `'too_long'` (més de 100.000 accions).
 
 **Important**: els errors de runtime *no llancen excepcions JS*. Si modifiques l'intèrpret o l'executor, usa sempre el mecanisme de `yield { type:'error' }` / `errStop`, no `throw`. Llançar dins d'un generador que és consumit per `tick()` provocaria una excepció no capturada.
 
@@ -388,7 +441,7 @@ Botó sol/lluna a la topbar. Preferència desada a `localStorage` (clau `'karel-
 
 ---
 
-## 11. Paràmetres d'URL acceptats per `index.html`
+## 11. Paràmetres d'URL acceptats per `simulador.html`
 
 Gestionats per `main.js` a l'IIFE d'inicialització:
 
@@ -403,8 +456,12 @@ Gestionats per `main.js` a l'IIFE d'inicialització:
 | `goalId=STRING` | string | Identificador de l'exercici per al postMessage. |
 | `bag=N` | enter | Motxilla inicial de Karel (usada pels simuladors del curs). |
 | `theme=light` | `light` | Força mode clar (aplicat inline al HTML, sincronitzat per `initTheme`). |
+| `multi=1` | qualsevol | Simulador d'un repte amb diversos mons (estils de la barra). |
+| `save=CLAU` | string | Desa el codi de l'alumne a `localStorage[CLAU]` i mostra «⟲ Codi inicial». |
+| `cur=BASE64` | codi | Codi actual de l'alumne en canviar de món (si no hi ha localStorage). |
+| `worlds=BASE64` | JSON `[{map, goal, bag, goalId}]` | Tots els mons del repte: mostra «✓ Comprova tots els mons». |
 
-Quan `embed=1` és present, **no es guarda res a localStorage** (`useLocalStorage = false`).
+El codi només es desa a localStorage al simulador lliure (clau `karel-code-v3`) o quan hi ha `save=CLAU`.
 
 ---
 
@@ -452,9 +509,11 @@ Algunes decisions poden semblar discutibles però són intencionals:
 
 **L'invariant de posició és estructural, no defensiu.** Karel mai pot estar sobre una roca. Qualsevol guard del tipus `if (cell === 'P') return errStop('rock')` dins de `drop()` seria codi mort. No afegir-lo: és confús i indueix a pensar que l'estat podria ser invàlid quan no pot ser-ho.
 
-**`compareGoal` ignora la direcció final de Karel.** Decisió pedagògica: l'exercici es considera resolt si Karel és a la posició correcta i el món té el contingut correcte.
+**`compareGoal` ignora per defecte la direcció final de Karel.** Decisió pedagògica: l'exercici es considera resolt si Karel és a la posició correcta i el món té el contingut correcte (també la casella de sota en Karel). Si cal, l'objectiu pot demanar-la amb `;direccio`.
 
-**El tokenitzador detecta automàticament la unitat d'indentació.** `_detectIndentUnit` calcula el mínim sagnat no nul present al codi. Això permet que 2, 3 o 4 espais per nivell funcionin tots sense configuració.
+**La indentació segueix exactament les regles de Python** (pila de nivells, INDENT/DEDENT). Cap línia s'ignora en silenci: si alguna cosa no quadra, és un error de sintaxi amb número de línia i un missatge en català.
+
+**Les funcions es poden cridar abans de la línia on es defineixen** (com si totes les `def` es llegissin primer). En Python real cal definir-les abans; els esquelets del curs sempre les posen a dalt.
 
 **`not` suporta dues sintaxis.** `not cond()` i `not(cond())` ambdues funcionen. Això és Python-compatible i pedagògicament útil.
 
@@ -466,8 +525,10 @@ Abans de fer qualsevol canvi:
 
 - [ ] El canvi és **additiu** o **invasiu**? Preferir sempre additiu.
 - [ ] Si modifiques `i18n.js`: has mantingut la paritat d'ordre entre `commands[]` i `K.CMD_ACTIONS`? Entre `conditions[]` i `K.COND_ACTIONS`?
-- [ ] Si afegeixes un script nou: l'has inclòs a `index.html` en la posició correcta? Has exportat totes les funcions via `K.nomFuncio`?
-- [ ] Si modifiques el parser o tokenitzador: `for _ in range(10): move()` i `for i in range(3):\n    move()` segueixen funcionant tots dos?
+- [ ] Si afegeixes un script nou: l'has inclòs a `simulador.html` (i a `tests/comprova-curs.js` si és del motor) en la posició correcta? Has exportat totes les funcions via `K.nomFuncio`?
+- [ ] Si modifiques el parser o tokenitzador: `for _ in range(10): move()` i `for i in range(3):\n    move()` segueixen funcionant tots dos? (el test automàtic ho comprova)
+- [ ] Has executat `node tests/comprova-curs.js` i surt «✓ Tot correcte»?
+- [ ] Si has creat o modificat un exercici amb objectiu: té la seva `<solucio>` i el test la supera?
 - [ ] Si modifiques `execution.js`: els errors de runtime es comuniquen via `errStop()` o `yield {type:'error'}`, no via `throw`?
 - [ ] Si modifiques el renderer: `renderWorld()` diferencial i `renderWorldFull()` rebuild complet produeixen el mateix resultat visual?
 - [ ] Els mapes dels simuladors usen `|` com a separador de files (no `\n`)?
@@ -483,8 +544,33 @@ Abans de fer qualsevol canvi:
 |----------|----------|-------|
 | `docs/CURRENT-STATE.md` | **Aquest fitxer.** Font única de veritat. | ✅ Actiu |
 | `docs/i18n-spanish-guide.md` | Guia pas a pas per afegir `uiLang: 'es'` (castellà). | ✅ Actiu |
-| `curs/BRIEFING-REPTES.md` | Detall de cada repte: mapes, solucions, notes pedagògiques. | ✅ Actiu |
+| `curs/BRIEFING-REPTES.md` | Detall de cada repte: mapes, notes pedagògiques. | ✅ Actiu |
+| `tests/comprova-curs.js` | Test automàtic (vegeu secció 16). | ✅ Actiu |
 
 ---
 
-*Última actualització: consolidació DRY de la documentació — absorbit `auditoria.md` i `AI_INSTRUCTIONS.md` dins d'aquest document. Eliminat `docs/arxiu/`. El projecte passa de 8 documents a 4 (README + 3 docs actius).*
+## 16. Test automàtic del curs
+
+```
+node tests/comprova-curs.js
+```
+
+No cal instal·lar res (només Node.js). Carrega els mateixos fitxers `js/*.js` que el
+navegador i comprova:
+
+1. **El motor:** ~40 programes que han de funcionar o donar un error concret
+   (indentació, parèntesis, noms mal escrits…) i el verificador d'objectius.
+2. **Totes les pàgines de `curs/`:** format dels mapes i objectius (una sola K, mateixes
+   dimensions, roques iguals al mapa i a l'objectiu, JSON vàlid…); que cada
+   `<solucio>` superi **tots** els mons del seu exercici; que cada `<solucio-incorrecta>`
+   en falli almenys un; i que els exemples no editables s'executin bé (o mostrin
+   l'error que diuen amb `data-error`).
+3. **`curs/capitols.js`:** que `REPTES_DATA` apunti a fitxers que existeixen i que el
+   nombre de mons (`mons`) coincideixi amb la pàgina.
+
+Acaba amb «✓ Tot correcte» o amb la llista d'errors (i codi de sortida 1). A GitHub,
+l'acció `.github/workflows/comprova-curs.yml` l'executa a cada push.
+
+---
+
+*Última actualització: nou parser amb indentació de Python i errors clars; verificador que mira la casella de sota en Karel, amb objectius sense K, opcions i alternatives; reptes 5, 7, 8, 9, 10, 12 i 13 corregits (i objectius dels reptes 2, 6, 11 i dels capítols 1, 2, 4, 6); invalidació dels mons per empremta del codi i botó «Comprova tots els mons»; codi de l'alumne desat per exercici; test automàtic `tests/comprova-curs.js`.*

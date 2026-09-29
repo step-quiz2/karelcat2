@@ -230,7 +230,7 @@ deixa_perla_a_columna_5()
 
         <div class="simulador"
              data-map=".,.,.,.,.,.,.|K>,A,.,A,.,A,.|.,.,.,.,.,.,."
-             data-goal=".,.,.,.,.,.,.|.,.,.,.,.,.,K>|.,.,.,.,.,.,."
+             data-goal=".,.,.,.,.,.,.|.,.,.,.,.,.,.|.,.,.,.,.,.,."
              data-code="# Defineix les teves tres funcions aquí:
 
 
@@ -258,6 +258,47 @@ deixa_perla_a_columna_5()
 
 </div>
 
+
+<!--
+  ════════════════════════════════════════════════════════
+  SOLUCIONS DE REFERÈNCIA — NOMÉS PER AL PROFESSOR
+  (El test tests/comprova-curs.js executa el codi entre les marques.)
+  ════════════════════════════════════════════════════════
+
+<solucio>
+def recull_primera():
+    move()
+    grab()
+
+def recull_segona():
+    move()
+    move()
+    grab()
+
+def recull_tercera():
+    move()
+    move()
+    grab()
+
+recull_primera()
+recull_segona()
+recull_tercera()
+</solucio>
+
+<solucio-incorrecta motiu="s'oblida de cridar l'última funció">
+def recull_primera():
+    move()
+    grab()
+
+def recull_segona():
+    move()
+    move()
+    grab()
+
+recull_primera()
+recull_segona()
+</solucio-incorrecta>
+-->
 
 <script>const CURRENT_CAPITOL = 6;</script>
 <script src="progress.js"></script>
