@@ -122,6 +122,7 @@ function buildInterpreter() {
 // Torna el món i en Karel a l'estat inicial i ho repinta
 function restoreInitialWorld() {
   const S = K.state;
+  if (K.goalView) K.goalView.diff = null;       // les diferències eren de l'intent anterior
   S.world.grid = S.worldInit.map(r => [...r]);
   S.karel = { ...S.karelInit };
   K.clearLineMarks();
@@ -189,7 +190,9 @@ function _finishProgram() {
   K.clearLineMarks();
   S.running = false; S.interpreter = null;
   K.setStateUI('idle');
-  notifyGoalResult(K.compareGoal(K.goalCSV));
+  const passed = K.compareGoal(K.goalCSV);
+  if (K.goalCSV && !passed && K.showGoalDiff) K.showGoalDiff(K.goalCSV);
+  notifyGoalResult(passed);
 }
 
 function doStep() {

@@ -46,7 +46,7 @@
     </nav>
 
 
-  <div class="curs-header-actions"><button class="karel-clear-btn" onclick="karelClearProgress()" title="Netejar tot el progrés">Netejar històric</button></div>
+  <div class="curs-header-actions"></div>
 </header>
 
 
@@ -264,14 +264,6 @@ for i in range(5):
   initSidebarToggle();
 </script>
 
-<script>
-function karelClearProgress() {
-  if (confirm('Vols netejar totes les anotacions dels capítols llegits i dels reptes superats?')) {
-    KProgress.clear();
-    location.reload();
-  }
-}
-</script>
 <script src="../footer.js"></script>
 </body>
 </html>

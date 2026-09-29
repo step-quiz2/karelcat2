@@ -93,7 +93,8 @@
   K.initSpeedSlider();
   K.initGlossari();
 
-  // 3) Carrega el mapa
+  // 3) Carrega el mapa (i l'objectiu, si n'hi ha, per poder-lo mostrar)
+  K.initGoalView(K.goalCSV);
   K.loadMapFromCSV(initMap);
 
   // Inicialitza la motxilla si ve per paràmetre (?bag=N, usat pels simuladors del curs)
@@ -191,6 +192,18 @@
       sync();
     }
   } catch (e) { /* pare d'un altre origen: sense botó */ }
+
+  // «🎯 Objectiu»: mostra, transparent, com ha de quedar el món
+  const worldAreaEl = document.getElementById('world-area');
+  if (K.goalView && worldAreaEl) {
+    const gb = document.createElement('button');
+    gb.type = 'button';
+    gb.id = 'btn-goal';
+    gb.className = 'btn goal-btn';
+    gb.addEventListener('click', () => K.cycleGoalView());
+    worldAreaEl.appendChild(gb);
+    K.updateGoalButton();
+  }
 
   // 6) Auto-escala del grid en redimensionar
   const worldArea = document.getElementById('world-area');
