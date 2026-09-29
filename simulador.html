@@ -333,7 +333,7 @@ function openMapInEditor() {
     // No el disparem mai dins iframes del curs (?embed=1): allà el
     // simulador és una peça incrustada, el tour no té sentit.
     if (new URLSearchParams(location.search).get('embed') === '1') return;
-    if (localStorage.getItem('karel_tour_done_v1')) return;
+    try { if (localStorage.getItem('karel_tour_done_v1')) return; } catch (e) { return; }
     const f = document.createElement('iframe');
     f.id = 'tour-iframe';   // el tour s'autodestrueix buscant aquest id
     f.src = 'presentacio-karel.html';

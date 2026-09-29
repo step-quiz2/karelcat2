@@ -46,6 +46,11 @@ K.UI_LANGS = {
       speed:     'Velocitat:',
       bag:       'Motxilla:',
       readonly:  'No editable',
+      check_all: '✓ Comprova tots els mons',
+      check_all_title: 'Executa el mateix codi a tots els mons del repte i marca quins supera',
+      restore:   '⟲ Codi inicial',
+      restore_title: 'Torna a posar el codi amb què començava l\'exercici',
+      restore_confirm: 'Vols esborrar el teu codi i tornar a començar amb el codi inicial de l\'exercici?',
     },
 
     state: {
@@ -66,6 +71,14 @@ K.UI_LANGS = {
       line:       'línia',
       inf_loop:   '⚠ S\'ha detectat una iteració indefinida que no acabarà mai',
       deep_rec:   '⚠ Recursió massa profunda',
+      too_many:   '⚠ range() massa gran: el màxim és 10.000 repeticions',
+      drop_occupied: '⚠ {cmd}: ja hi ha una perla aquí — la teva es queda a la motxilla',
+      code_restored: '⟲ S\'ha recuperat el codi inicial de l\'exercici',
+      check_all:  'Comprovació de tots els mons amb el mateix codi:',
+      world_ok:   'Món {i}: ✓ superat',
+      world_fail: 'Món {i}: ✗ en Karel no arriba a l\'objectiu',
+      world_err:  'Món {i}: ✗ error a la línia {n}: {msg}',
+      all_ok:     '✓ El codi supera tots els mons!',
     },
 
     err: {
@@ -74,13 +87,36 @@ K.UI_LANGS = {
       bag_empty:  'En Karel no té cap perla a la motxilla i no en pot deixar cap',
       proc_undef: 'Aquesta funció no existeix, no l\'has definida prèviament',
       syntax:     'Error de sintaxi',
+      too_long:   'El programa ha fet massa passos (potser no acaba mai)',
     },
 
     parse: {
       expected:      "Línia {n}: he llegit '{got}' però jo esperava llegir '{want}'",
       unexpected:    "Línia {n}: no esperava '{tok}'",
-      unknown_cond:  "Línia {n}: condició desconeguda '{tok}'",
+      unknown_cond:  "Línia {n}: no conec la condició '{tok}'.",
       expected_proc: "Línia {n}: falta el nom de la funció",
+      missing_colon: "Línia {n}: falten els dos punts ':' al final de la línia",
+      missing_parens:"Línia {n}: a '{w}' li falten els parèntesis: escriu {w}()",
+      no_args:       "Línia {n}: {w}() no porta res dins dels parèntesis",
+      indent_expected: "Línia {n}: falta el bloc de '{hdr}': a sota hi ha d'haver almenys una instrucció indentada (amb espais al davant)",
+      indent_unexpected: "Línia {n}: aquesta línia té espais al davant, però no és dins de cap bloc. Només s'indenten les línies que hi ha a sota d'una línia acabada en ':'",
+      dedent_mismatch: "Línia {n}: la indentació no coincideix amb la de cap línia de més amunt. Revisa quants espais hi ha al davant",
+      one_per_line:  "Línia {n}: només hi pot haver una instrucció per línia (després de '{prev}' hi ha '{tok}')",
+      block_same_line: "Línia {n}: després de ':' no hi pot haver un '{kw}' a la mateixa línia. Posa'l a la línia de sota, indentat",
+      break_outside: "Línia {n}: 'break' només es pot fer servir a dins d'un while o d'un for",
+      else_without_if: "Línia {n}: aquest '{kw}' no té cap 'if' just a sobre, amb la mateixa indentació",
+      def_nested:    "Línia {n}: les funcions s'han de definir fora de qualsevol bloc (sense espais al davant de 'def')",
+      def_builtin:   "Línia {n}: '{w}' ja és una instrucció d'en Karel. Posa un altre nom a la teva funció",
+      def_keyword:   "Línia {n}: '{w}' és una paraula reservada de Python i no pot ser el nom d'una funció",
+      bad_char:      "Línia {n}: el caràcter '{c}' no es pot fer servir aquí",
+      unknown_name:  "Línia {n}: no conec '{w}()'.",
+      did_you_mean:  " Volies dir {s}()?",
+      case_hint:     " (en Python, les majúscules i les minúscules són diferents)",
+      define_hint:   " Si és una funció teva, l'has de definir amb 'def {w}():'",
+      cond_as_cmd:   "Línia {n}: '{w}()' és una condició: només es pot fer servir dins d'un if o d'un while",
+      cmd_as_cond:   "Línia {n}: '{w}()' és una instrucció, no una condició. Condicions són, per exemple, front_is_clear() o pearl_here()",
+      proc_as_cond:  "Línia {n}: '{w}()' és una funció teva, i les funcions no poden fer de condició",
+      for_syntax:    "Línia {n}: el for s'escriu així: for i in range(4):",
     },
   },
 };
@@ -97,7 +133,7 @@ function t(key) {
 
 function tf(key, vars) {
   let s = t(key);
-  for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, v);
+  for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(v);
   return s;
 }
 

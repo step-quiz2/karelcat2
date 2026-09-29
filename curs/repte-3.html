@@ -217,6 +217,7 @@ def puja_grao():
   No apareix en cap data-code visible a l'alumne.
   ════════════════════════════════════════════════════════
 
+<solucio>
 def puja_grao():
     move()
     turn_left()
@@ -226,6 +227,19 @@ def puja_grao():
 while front_is_clear():
     drop()
     puja_grao()
+</solucio>
+
+<solucio-incorrecta motiu="deixa la perla després de pujar el graó">
+def puja_grao():
+    move()
+    turn_left()
+    move()
+    turn_right()
+
+while front_is_clear():
+    puja_grao()
+    drop()
+</solucio-incorrecta>
 
   Traça d'execució (coordenades fila, columna des de 0):
     Inici:  (4,0) → Est

@@ -182,6 +182,14 @@ function updateEditor() {
 }
 
 
+// ── Desa el codi de l'alumne ──
+// K.codeStorageKey el decideix main.js: la clau del simulador lliure, la
+// d'un exercici del curs (?save=...) o null (exemples: no es desa res).
+function saveCode(code) {
+  if (K.codeStorageKey) K.lsSet(K.codeStorageKey, code);
+}
+
+
 // ── Inicialització (cridada des de main.js) ──
 
 function initEditor() {
@@ -191,7 +199,7 @@ function initEditor() {
   // Canal principal: cada canvi de contingut re-ressalta i re-sincronitza.
   ta.addEventListener('input', () => {
     updateEditor();
-    localStorage.setItem(K.LS_KEY_CODE, ta.value);
+    saveCode(ta.value);
     // Safety net: el navegador pot ajustar ta.scrollLeft/scrollTop
     // DESPRÉS de 'input' (clamp al nou max-scroll, scroll per mantenir
     // el caret visible, reflow del teclat virtual en mòbil). Si no es
@@ -342,7 +350,7 @@ function initAutocomplete(ta) {
     ta.selectionStart = ta.selectionEnd = pre.length + item.text.length;
     hideAC();
     updateEditor();
-    localStorage.setItem(K.LS_KEY_CODE, ta.value);
+    saveCode(ta.value);
     ta.focus();
     // Assignació a value + selection → possible scroll asíncron
     requestAnimationFrame(syncLayers);

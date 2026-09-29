@@ -189,7 +189,8 @@ move()
         </div>
         <div class="simulador"
              data-map=".,.,.,A|.,.,.,.|.,.,.,.|K>,.,.,."
-             data-goal=".,.,.,K^|.,.,.,.|.,.,.,.|.,.,.,."
+             data-goal=".,.,.,K^A|.,.,.,.|.,.,.,.|.,.,.,.
+.,.,.,K^|.,.,.,.|.,.,.,.|.,.,.,."
              data-code="
 
 "
@@ -226,6 +227,31 @@ move()
 <!-- ══════════════════════════════════════════════════════
      Scripts
      ══════════════════════════════════════════════════════ -->
+<!--
+  ════════════════════════════════════════════════════════
+  SOLUCIONS DE REFERÈNCIA — NOMÉS PER AL PROFESSOR
+  (El test tests/comprova-curs.js executa el codi entre les marques.)
+  ════════════════════════════════════════════════════════
+
+<solucio>
+move()
+move()
+move()
+turn_left()
+move()
+move()
+move()
+</solucio>
+
+<solucio-incorrecta motiu="gira cap al costat equivocat">
+move()
+move()
+move()
+turn_right()
+move()
+</solucio-incorrecta>
+-->
+
 <script>const CURRENT_CAPITOL = 1;</script>
 <script src="progress.js"></script>
   <script src="capitols.js"></script>

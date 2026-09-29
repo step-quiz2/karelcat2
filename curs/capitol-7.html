@@ -162,7 +162,7 @@ else:
         <p><strong>Atenció:</strong> en aquest exemple no pots modificar el codi. Prem ▶ <strong>Executa</strong> i observa com funciona:</p>
 
         <div class="simulador"
-             data-map=".,.,.,.,.,.|.,.,.,.,.,.|K>,.,.,P,.|.,.,.,.,.,."
+             data-map=".,.,.,.,.,.|.,.,.,.,.,.|K>,.,.,P,.,.|.,.,.,.,.,."
              data-code="for i in range(5):
     if front_is_clear():
         move()
@@ -233,6 +233,27 @@ else:
 <!-- ══════════════════════════════════════════════════════
      Scripts
      ══════════════════════════════════════════════════════ -->
+<!--
+  ════════════════════════════════════════════════════════
+  SOLUCIONS DE REFERÈNCIA — NOMÉS PER AL PROFESSOR
+  (El test tests/comprova-curs.js executa el codi entre les marques.)
+  ════════════════════════════════════════════════════════
+
+<solucio>
+for i in range(5):
+    move()
+    if pearl_here():
+        grab()
+</solucio>
+
+<solucio-incorrecta motiu="comprova abans d'avançar i es deixa l'última perla">
+for i in range(5):
+    if pearl_here():
+        grab()
+    move()
+</solucio-incorrecta>
+-->
+
 <script>const CURRENT_CAPITOL = 7;</script>
 <script src="progress.js"></script>
   <script src="capitols.js"></script>

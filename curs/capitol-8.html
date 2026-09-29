@@ -182,7 +182,7 @@ while front_is_clear():
         <p><strong>Atenció:</strong> en aquest exemple no pots modificar el codi. Prem ▶ <strong>Executa</strong> i observa com funciona:</p>
 
         <div class="simulador"
-             data-map="K>,.,A,A,.,A,.,.|.,.,.,.,.,.,.,.,."
+             data-map="K>,.,A,A,.,A,.,.|.,.,.,.,.,.,.,."
              data-code="while front_is_clear():
     move()
     if pearl_here():
@@ -240,6 +240,37 @@ while front_is_clear():
 <!-- ══════════════════════════════════════════════════════
      Scripts
      ══════════════════════════════════════════════════════ -->
+<!--
+  ════════════════════════════════════════════════════════
+  SOLUCIONS DE REFERÈNCIA — NOMÉS PER AL PROFESSOR
+  (El test tests/comprova-curs.js executa el codi entre les marques.)
+  ════════════════════════════════════════════════════════
+
+<solucio>
+while front_is_clear():
+    if pearl_here():
+        grab()
+    move()
+turn_around()
+while front_is_clear():
+    if bag_is_full():
+        drop()
+    move()
+</solucio>
+
+<solucio-incorrecta motiu="avança abans de deixar cada perla">
+while front_is_clear():
+    if pearl_here():
+        grab()
+    move()
+turn_around()
+while front_is_clear():
+    move()
+    if bag_is_full():
+        drop()
+</solucio-incorrecta>
+-->
+
 <script>const CURRENT_CAPITOL = 8;</script>
 <script src="progress.js"></script>
   <script src="capitols.js"></script>

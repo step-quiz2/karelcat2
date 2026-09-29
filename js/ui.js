@@ -99,13 +99,13 @@ function updateThemeBtn() {
 
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
-  localStorage.setItem(K.LS_KEY_THEME, isLight ? 'light' : 'dark');
+  K.lsSet(K.LS_KEY_THEME, isLight ? 'light' : 'dark');
   updateThemeBtn();
 }
 
 function initTheme() {
   // Default is light; only switch to dark if the user explicitly chose dark.
-  const saved = localStorage.getItem(K.LS_KEY_THEME);
+  const saved = K.lsGet(K.LS_KEY_THEME);
   if (saved !== 'dark') {
     document.body.classList.add('light');
   }
