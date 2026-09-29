@@ -136,6 +136,29 @@ function currentStateToCSV() {
 K.currentStateToCSV = currentStateToCSV;
 
 
+// Diferències entre l'estat actual i l'objectiu. Si l'objectiu té diverses
+// alternatives, retorna la més propera (la que té menys diferències):
+//   { alt, goal, cells:[{x,y,want,got}], karelPos, karelDir, bag:{want,got}|null, total }
+// Retorna null si cap alternativa té les mateixes dimensions que el món.
+function goalDiff(goalStr) {
+  const S = K.state;
+  let best = null;
+  parseGoal(goalStr).forEach((g, alt) => {
+    if (g.rows !== S.world.rows || g.cols !== S.world.cols) return;
+    const cells = [];
+    for (let r = 0; r < g.rows; r++)
+      for (let c = 0; c < g.cols; c++)
+        if (g.grid[r][c] !== S.world.grid[r][c]) cells.push({ x: c, y: r, want: g.grid[r][c], got: S.world.grid[r][c] });
+    const karelPos = !!g.karel && (g.karel.x !== S.karel.x || g.karel.y !== S.karel.y);
+    const karelDir = !!g.karel && g.checkDir && !karelPos && g.karel.dir !== S.karel.dir;
+    const bag = (g.bag !== null && g.bag !== S.karel.motxilla) ? { want: g.bag, got: S.karel.motxilla } : null;
+    const total = cells.length + (karelPos ? 1 : 0) + (karelDir ? 1 : 0) + (bag ? 1 : 0);
+    if (!best || total < best.total) best = { alt, goal: g, cells, karelPos, karelDir, bag, total };
+  });
+  return best;
+}
+
+
 // ── Helpers del món ──
 
 function isRock(x, y) {
@@ -211,6 +234,7 @@ function evalCond(cond) {
 K.parseCSV       = parseCSV;
 K.parseGoal      = parseGoal;
 K.compareGoal    = compareGoal;
+K.goalDiff       = goalDiff;
 K.loadMapFromCSV = loadMapFromCSV;
 K.worldToCSV     = worldToCSV;
 K.isRock         = isRock;

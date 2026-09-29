@@ -53,6 +53,9 @@ K.UI_LANGS = {
       readonly:  'No editable',
       check_all: '✓ Comprova tots els mons',
       check_all_title: 'Executa el mateix codi a tots els mons del repte i marca quins supera',
+      goal:      '🎯 Objectiu',
+      goal_title: 'Mostra, transparent, com ha de quedar el món (una ✕ vermella marca les perles que hi sobren). Torna-hi a clicar per amagar-ho',
+      goal_title_alts: 'Mostra, transparent, com ha de quedar el món (una ✕ vermella marca les perles que hi sobren). N\'hi ha diverses possibilitats: cada clic mostra la següent',
       exit_fs:   '✕ Surt',
       exit_fs_title: 'Surt de la pantalla completa',
       restore:   '⟲ Codi inicial',
@@ -68,6 +71,8 @@ K.UI_LANGS = {
     },
 
     speed: ['Molt lent', 'Lent', 'Normal', 'Ràpid', 'Molt ràpid', 'Màxim'],
+
+    dir: ["a l'Est", 'al Sud', "a l'Oest", 'al Nord'],   // mateix ordre que K.DIRS
 
     log: {
       running:    '▶ Executant…',
@@ -87,6 +92,14 @@ K.UI_LANGS = {
       world_fail: 'Món {i}: ✗ en Karel no arriba a l\'objectiu',
       world_err:  'Món {i}: ✗ error a la línia {n}: {msg}',
       all_ok:     '✓ El codi supera tots els mons!',
+      diff_title: '✗ En Karel no ha arribat a l\'objectiu (diferències en vermell al món):',
+      diff_missing_1: '• hi falta 1 perla (la perla transparent)',
+      diff_missing:   '• hi falten {n} perles (les perles transparents)',
+      diff_extra_1:   '• hi sobra 1 perla',
+      diff_extra:     '• hi sobren {n} perles',
+      diff_karel: '• en Karel no ha acabat a la casella de l\'objectiu (la medusa transparent)',
+      diff_dir:   '• en Karel hauria d\'acabar mirant cap {dir}',
+      diff_bag:   '• perles a la motxilla: n\'hi hauria d\'haver {want} i n\'hi ha {got}',
     },
 
     err: {

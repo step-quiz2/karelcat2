@@ -16,7 +16,7 @@
   --cell-size:  44px;
   --topbar-h:   46px;
   /* Editor typography — shared between all three editor layers */
-  --ed-font-size:   0.8rem;
+  --ed-font-size:   0.875rem;
   --ed-line-height: 1.75;
   --ed-pad-top:     12px;
   --ed-pad-x:       14px;
@@ -103,7 +103,7 @@ body.light .logo   { color: var(--text); }
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.5px;
   color: var(--muted);
   white-space: nowrap;
@@ -136,7 +136,7 @@ body.light .logo   { color: var(--text); }
 
 /* Motxilla: a la barra d'eines, sempre visible (també dins dels iframes del curs) */
 .toolbar-bag {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--muted);
   white-space: nowrap;
   margin-left: auto;
@@ -144,14 +144,14 @@ body.light .logo   { color: var(--text); }
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-.toolbar-bag strong { color: var(--text); font-size: 0.8rem; }
+.toolbar-bag strong { color: var(--text); font-size: 0.9rem; }
 
 .speed-row {
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   flex: 0 0 30vw;
   max-width: 30vw;
   min-width: 120px;
@@ -403,7 +403,7 @@ body.light .lbg-row.active {
   overflow-y: auto;
   background: #080808;
   padding: 6px 12px;
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   line-height: 1.65;
 }
 #log p     { margin: 0; white-space: pre-wrap; }
@@ -493,7 +493,7 @@ body.light .lbg-row.active {
   border: 1px solid var(--border);
   border-radius: 3px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   background: var(--surface);
@@ -516,7 +516,7 @@ body.light .lbg-row.active {
 .btn:disabled { opacity: 0.4; cursor: default; }
 .btn[hidden] { display: none; }
 .btn:disabled:hover { border-color: var(--border); color: var(--text); }
-.btn.full { width: 100%; padding: 8px 12px; font-size: 0.7rem; }
+.btn.full { width: 100%; padding: 8px 12px; font-size: 0.8rem; }
 
 
 /* ── MODE CLAR — overrides d'elements hardcodejats ── */
@@ -654,7 +654,7 @@ body.light .ac-item[data-kind="kw"]   { color: #0000ff; }
   .code-col { min-height: 60vh; min-height: 60svh; border-right: none; }
   .world-area { min-height: 40vw; }
   .toolbar { flex-wrap: wrap; gap: 4px; }
-  .toolbar .btn { padding: 4px 8px; font-size: 0.62rem; }
+  .toolbar .btn { padding: 4px 8px; font-size: 0.72rem; }
   .speed-row input[type=range] { width: 140px; }
   /* En mòbil + embed, els capítols (un sol món) tenen més espai a la
      toolbar que els reptes (que porten tabs Món 1/2/3). Mantenim el
@@ -711,18 +711,18 @@ body.embed .toolbar {
   padding: 4px 10px;
   min-height: 36px;
 }
-body.embed .toolbar .btn { padding: 4px 10px; font-size: 0.68rem; }
+body.embed .toolbar .btn { padding: 4px 10px; font-size: 0.76rem; }
 body.embed .toolbar .speed-row { gap: 6px; }
 body.embed #speed-lbl { display: none; }
 
-/* Log més petit en embed */
-body.embed #log-wrap { max-height: 80px; }
+/* Log més petit en embed (hi caben ~4 línies: prou per a les diferències amb l'objectiu) */
+body.embed #log-wrap { max-height: 100px; }
 
 /* En embed, cancel·lem el 16px mòbil (pensat per evitar l'auto-zoom d'iOS
    al textarea de la pàgina gran) i tornem a la mida compacta per defecte.
    Dins dels iframes del curs els exemples són majoritàriament readonly,
    així que no hi ha focus del textarea que dispari el zoom. */
-body.embed { --ed-font-size: 0.8rem; }
+body.embed { --ed-font-size: 0.875rem; }
 
 /* ════════════════════════════════════════════════════════
    GLOSSARI — Modal de referència ràpida
@@ -730,7 +730,7 @@ body.embed { --ed-font-size: 0.8rem; }
 
 .btn-glossari {
   margin-left: auto;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   color: var(--muted);
   border-color: var(--border);
   white-space: nowrap;
@@ -773,7 +773,7 @@ body.embed { --ed-font-size: 0.8rem; }
 
 .glossari-title {
   font-family: var(--mono);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
   letter-spacing: 0.5px;
@@ -804,7 +804,7 @@ body.embed { --ed-font-size: 0.8rem; }
 
 .glossari-section h3 {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -814,7 +814,7 @@ body.embed { --ed-font-size: 0.8rem; }
 
 .glossari-hint {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   color: var(--muted);
   margin: 0 0 8px;
   line-height: 1.5;
@@ -830,7 +830,7 @@ body.embed { --ed-font-size: 0.8rem; }
   grid-template-columns: auto 1fr;
   gap: 3px 14px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   line-height: 1.7;
 }
 .glossari-grid code {
@@ -842,7 +842,7 @@ body.embed { --ed-font-size: 0.8rem; }
 /* Code examples */
 .glossari-example {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   line-height: 1.6;
   color: var(--text);
   background: var(--bg);
@@ -856,7 +856,7 @@ body.embed { --ed-font-size: 0.8rem; }
 /* Rules */
 .glossari-rules .glossari-rule {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   color: var(--text);
   line-height: 1.8;
 }
@@ -888,8 +888,8 @@ body.embed { --ed-font-size: 0.8rem; }
     touch-action: pan-y;
     padding: 14px 16px 24px;
   }
-  .glossari-grid { font-size: 0.63rem; gap: 2px 10px; }
-  .glossari-example { font-size: 0.62rem; padding: 6px 10px; }
+  .glossari-grid { font-size: 0.74rem; gap: 2px 10px; }
+  .glossari-example { font-size: 0.72rem; padding: 6px 10px; }
 }
 
 
@@ -951,7 +951,7 @@ body.is-readonly #line-numbers {
   padding: 4px 12px;
   border-radius: 4px;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   background: var(--border);
   color: var(--muted);
   opacity: 0;
@@ -972,11 +972,52 @@ body.is-readonly #line-numbers {
   .btn, .mon-btn, .glossari-close { touch-action: manipulation; }
   .toolbar .btn,
   body.embed .toolbar .btn,
-  .map-toolbar .btn { min-height: 40px; padding: 6px 12px; font-size: 0.78rem; }
+  .map-toolbar .btn { min-height: 40px; padding: 6px 12px; font-size: 0.82rem; }
   .toolbar { gap: 6px; }
   .speed-row input[type=range] { min-height: 32px; }
   #btn-theme, .btn-glossari, .karel-nav-toggle { min-height: 40px; min-width: 40px; }
   .glossari-close { width: 40px; height: 40px; }
-  #log { font-size: 0.78rem; }
+  #log { font-size: 0.85rem; }
   .ac-item { padding: 10px 14px; }
 }
+
+/* ════════════════════════════════════════════════════════
+   OBJECTIU (renderer.js): botó «🎯 Objectiu», capa transparent i diferències
+   ════════════════════════════════════════════════════════ */
+.goal-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  background: var(--surface);
+}
+.goal-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.cell .ghost {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.4;
+}
+.cell .ghost-pearl { inset: 18%; }
+.cell .ghost-pearl svg { width: 100%; height: 100%; }
+.cell .ghost-karel { inset: 0; opacity: 0.32; }
+.cell .ghost-karel .karel-entity { animation: none; filter: none; }
+/* Perla que hi és però que a l'objectiu no hi ha de ser */
+.cell .ghost-x {
+  top: 1px;
+  right: 3px;
+  opacity: 0.85;
+  color: var(--error);
+  font-weight: 700;
+  font-size: max(11px, calc(var(--cell-size, 36px) * 0.3));
+  line-height: 1;
+}
+/* Casella diferent de l'objectiu després d'un intent fallit */
+.cell.cell-diff {
+  box-shadow: inset 0 0 0 3px var(--error);
+  background: var(--error-dim);
+}
+body.light .cell.cell-diff { background: #fee2e2 !important; }

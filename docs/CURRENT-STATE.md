@@ -188,6 +188,16 @@ Mateix format que els mapes, amb aquestes regles (`K.parseGoal` i `K.compareGoal
 - **Alternatives:** diversos objectius separats per un salt de línia; n'hi ha prou amb
   un. A `data-goals` (JSON) un element pot ser un array: `[".,A,.", [".,A,.,.", ".,.,A,."]]`.
 
+**L'alumne veu l'objectiu.** Quan un simulador té objectiu, a dalt a l'esquerra del món
+hi ha el botó **«🎯 Objectiu»**: dibuixa per sobre del món, transparents, les perles i en
+Karel tal com han de quedar, i una ✕ vermella a les perles que hi sobren (si hi ha
+alternatives, cada clic en mostra una: «🎯 Objectiu 1/2», «2/2», amagat). Després d'un
+intent que acaba sense errors però no arriba a l'objectiu, `K.goalDiff` (a `world.js`)
+calcula les diferències amb l'alternativa més propera: les caselles diferents es marquen
+en vermell i el registre les explica (perles que falten o sobren, on ha d'acabar en Karel,
+direcció, motxilla). Les marques s'esborren en tornar a executar o en reiniciar. El test
+automàtic comprova `goalDiff`.
+
 ### Atributs HTML dels simuladors
 
 ```html
@@ -398,6 +408,10 @@ clau `karel-code-v3` i els exercicis ja no la sobreescriuen.
 
 `renderWorld()` no reconstrueix el DOM complet en cada tick. Manté un `_renderedSnapshot` de la clau de cada cel·la (string que combina contingut + presència de Karel + direcció). Només actualitza les cel·les on la clau ha canviat o la mida de cel·la ha variat.
 
+La clau de cada cel·la inclou també la capa de l'objectiu (`_overlay`: perla o Karel
+transparents, ✕, vora vermella de diferència), de manera que aquesta capa es redibuixa
+amb el mateix mecanisme.
+
 Reconstrucció completa (`renderWorldFull`) només quan canvien les dimensions del món. Útil per saber-ho si cales al renderer: trucar `renderWorldFull()` força un rebuild; `renderWorld()` és incremental.
 
 ---
@@ -434,12 +448,24 @@ Hi ha dos tipus d'errors diferenciats:
   **⏭ Pas** (executa una instrucció; si el programa corre, el posa en pausa), Reinicia, slider de velocitat
   i **Motxilla** (sempre visible). Als exercicis del curs, a més: «✓ Comprova tots els mons»
   (reptes), «⟲ Codi inicial» i «✕ Surt» (quan l'iframe és a pantalla completa).
+- **Món:** botó «🎯 Objectiu» (només si l'exercici té objectiu; vegeu secció 4).
 - **Barra de tecles** (només pantalles tàctils): a sota de l'editor.
 - **Pantalla completa:** a les pàgines del curs, cada exercici té el botó «⛶ Pantalla completa».
 - **Peu de pàgina** (`footer.js`): no és fix, és l'última fila; contingut CC BY-NC-SA 4.0, codi MIT.
 - **Zona principal:** editor de codi (esquerra, 50%) + món de Karel (dreta, 50%).
 - **Log:** sota l'editor, es buida automàticament a cada execució.
-- **Eliminats definitivament:** modals, menú hamburguesa, selectors d'idioma, panells de pistes/referència, editor de mapes integrat, onboarding.
+- **Mides de lletra** (pensades per a portàtil i tauleta): editor 14 px (15 px en pantalla
+  tàctil), registre i botons ≈ 12,5–13 px, cap text d'interfície per sota de ≈ 11,5 px.
+- **Presentació inicial** (`presentacio-karel.html`): només n'hi ha una d'automàtica, la
+  primera vegada que s'obre el simulador lliure (mai dins dels iframes del curs). La
+  portada no redirigeix: té l'enllaç «▶ Primer cop aquí? Mira la presentació», destacat
+  mentre no s'ha vist. Totes dues vies posen `karel_tour_done_v1`. Tancar-la no demana
+  confirmació i torna a la pàgina d'on es venia (o a la portada).
+- **Esborrar el progrés:** botó «🗑 Esborra el meu progrés» a la part de baix de la barra
+  lateral del curs i al final de `curs/index.html` (ja no és a la capçalera). La funció
+  `karelClearProgress` és a `curs/capitols.js`: demana confirmació i esborra el progrés
+  (`karel_progress`) i el codi desat dels exercicis (`karel-code:*`).
+- **Eliminats definitivament:** modals, menú hamburguesa, selectors d'idioma, panells de pistes/referència, editor de mapes integrat.
 
 ### Mode fosc/clar
 Botó sol/lluna a la topbar. Preferència desada a `localStorage` (clau `'karel-theme'`).
@@ -588,4 +614,4 @@ l'acció `.github/workflows/comprova-curs.yml` l'executa a cada push.
 
 ---
 
-*Última actualització: millores per a portàtil i tauleta (indentació automàtica, barra de tecles tàctil, pantalla completa, botó Pas, motxilla visible, botons grans, simulador que omple l'iframe), detecció exacta de bucles infinits, `bag_has_pearls()`, textos del glossari i dels capítols 7, 8 i 10, objectius dels reptes 4, 6 i 11, peu de pàgina no fix amb la llicència correcta, capítol 3 disponible a l'índex. Abans: nou parser, verificador, reptes corregits i test automàtic.*
+*Última actualització: botó «🎯 Objectiu» (objectiu transparent sobre el món) i diferències marcades en vermell després d'un intent fallit; lletra més gran a tota la interfície; una sola presentació inicial; «Esborra el meu progrés» a la barra lateral. Abans: millores per a portàtil i tauleta, detecció exacta de bucles infinits, nou parser, verificador, reptes corregits i test automàtic.*

@@ -161,7 +161,34 @@ function engineTests() {
     if (r.ok && r.passed === expected) { pass(); okCount++; }
     else fail('verificador', `${desc}: esperava ${expected ? 'superat' : 'no superat'} i ha donat ${r.ok ? (r.passed ? 'superat' : 'no superat') : 'error: ' + r.message}`);
   }
-  console.log('  ' + c.ok(`✓ ${okCount}/${ENGINE_CASES.length + G.length} proves`));
+
+  // Diferències amb l'objectiu (el que es marca en vermell al món)
+  const D = [
+    ['perla que falta i Karel mal situat', 'K>,A,.,.', 'move()\n',          'A,.,.,K>', { missing: 1, extra: 1, karelPos: true }],
+    ['tria l\'alternativa més propera',   'K>,.,.',   'move()\n',          '.,.,K>\n.,K>,.', { alt: 1, total: 0 }],
+    ['motxilla i direcció',               'K>A,.',    'turn_left()\n',     'K>A,.;motxilla=1;direccio', { bag: true, karelDir: true }],
+  ];
+  for (const [desc, map, code, goal, exp] of D) {
+    // Executa el codi i calcula les diferències sense restaurar l'estat
+    const S = K.state, saved = { ...S };
+    const w = K.parseCSV(map);
+    S.world = { grid: w.grid, rows: w.rows, cols: w.cols };
+    S.karel = { ...w.kStart, motxilla: 0 };
+    for (const n of K.parseProgram(code)) {
+      if (n.type === 'command') K.applyCommand(K.lang.CMD_TO_ACTION[n.name]);
+    }
+    const d = K.goalDiff(goal);
+    Object.assign(S, saved);
+    if (!d) { fail('verificador', `diferències — ${desc}: goalDiff ha retornat null`); continue; }
+    const got = {
+      missing: d.cells.filter(x => x.want === 'A').length, extra: d.cells.filter(x => x.got === 'A').length,
+      karelPos: d.karelPos, karelDir: d.karelDir, bag: !!d.bag, alt: d.alt, total: d.total,
+    };
+    const okD = Object.entries(exp).every(([k, v]) => got[k] === v);
+    if (okD) { pass(); okCount++; }
+    else fail('verificador', `diferències — ${desc}: esperava ${JSON.stringify(exp)} i ha donat ${JSON.stringify(got)}`);
+  }
+  console.log('  ' + c.ok(`✓ ${okCount}/${ENGINE_CASES.length + G.length + D.length} proves`));
 }
 
 

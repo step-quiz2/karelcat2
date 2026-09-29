@@ -65,6 +65,32 @@ const REPTES_DATA = [
   { num: 13, titol: 'El punt mig',          arxiu: 'repte-13.html', mons: 3 },
 ];
 
+// ── Esborrar el progrés ──
+// El botó és a la part de baix de la barra lateral (i al final de l'índex del
+// curs), lluny dels botons d'ús freqüent, perquè no s'hi cliqui per error.
+function _sidebarFooter() {
+  return `
+    <div class="sidebar-footer">
+      <button type="button" class="karel-clear-btn" onclick="karelClearProgress()"
+              title="Esborra d'aquest navegador els capítols i reptes superats i el codi desat dels exercicis">🗑 Esborra el meu progrés</button>
+    </div>`;
+}
+
+window.karelClearProgress = function () {
+  const ok = confirm('Vols esborrar tot el progrés desat en aquest navegador?\n\n'
+    + '· els capítols i els reptes marcats com a superats\n'
+    + '· el codi que has escrit als exercicis\n\n'
+    + 'No es pot desfer.');
+  if (!ok) return;
+  try {
+    if (window.KProgress) KProgress.clear(); else localStorage.removeItem('karel_progress');
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('karel-code:'))
+      .forEach(k => localStorage.removeItem(k));
+  } catch (e) { /* localStorage bloquejat: no hi ha res a esborrar */ }
+  location.reload();
+};
+
 function renderReptesSidebar(currentNum) {
   const nav = document.getElementById('sidebar-nav');
   if (!nav) return;
@@ -89,7 +115,7 @@ function renderReptesSidebar(currentNum) {
         </a>
       </li>`;
   }
-  html += '</ul>';
+  html += '</ul>' + _sidebarFooter();
   nav.innerHTML = html;
 }
 
@@ -116,7 +142,7 @@ function renderSidebar(currentNum) {
         </a>
       </li>`;
   }
-  html += '</ul>';
+  html += '</ul>' + _sidebarFooter();
   nav.innerHTML = html;
 }
 
@@ -578,7 +604,7 @@ window.addEventListener('message', function(e) {
       fb.textContent = '✗ El programa s\'ha aturat per un error. Llegeix el missatge de sota l\'editor, corregeix el codi i torna-ho a provar.';
     } else {
       fb.className   = 'simulador-feedback fb-error';
-      fb.textContent = '✗ El programa s\'ha executat sense errors, però en Karel no ha arribat a l\'objectiu. Modifica el codi i torna-ho a provar.';
+      fb.textContent = '✗ El programa s\'ha executat sense errors, però en Karel no ha arribat a l\'objectiu. Les diferències estan marcades en vermell al món (i «🎯 Objectiu» mostra com ha de quedar). Modifica el codi i torna-ho a provar.';
     }
     // Progrés: només guardem si és un Exercici
     if (single.label === 'Exercici' && single.pageNum !== null) {

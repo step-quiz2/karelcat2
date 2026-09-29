@@ -283,17 +283,6 @@ K.DEFAULT_CODE =
 })();
 </script>
 <script>
-(function() {
-  var KEY = 'karel_progress';
-  window.karelClearProgress = function() {
-    if (confirm('Vols netejar totes les anotacions dels capítols llegits i dels reptes superats?')) {
-      try { localStorage.removeItem(KEY); } catch(e) {}
-      location.reload();
-    }
-  };
-})();
-</script>
-<script>
 // ── Accions del mapa al simulador ────────────────────────
 function _simMapToBase64() {
   return btoa(unescape(encodeURIComponent(K.worldToCSV())));
@@ -331,9 +320,10 @@ function openMapInEditor() {
 </script>
 <script src="./footer.js"></script>
 <script src="./js/kbd-accessory.js"></script>
-<!-- Tour inicial: només la primera vegada que aquest dispositiu obre
-     el simulador directament (no en mode embed dins els capítols).
-     El propi initial-tour.html posa 'karel_tour_done_v1' i s'autodestrueix. -->
+<!-- Presentació inicial: només si en aquest dispositiu encara no s'ha vist
+     (tampoc des de la portada) i mai en mode embed dins els capítols.
+     presentacio-karel.html posa 'karel_tour_done_v1' i, en tancar-la,
+     elimina aquest iframe. És l'única presentació automàtica del lloc. -->
 <script>
   (function () {
     // No el disparem mai dins iframes del curs (?embed=1): allà el

@@ -21,7 +21,7 @@
     '  padding: 4px 12px;',
     '  border-top: 1px solid var(--border, #ddd);',
     '  font-family: system-ui, sans-serif;',
-    '  font-size: 0.72rem;',
+    '  font-size: 0.78rem;',
     '  color: var(--muted, #555);',
     '  text-align: center;',
     '  flex-wrap: wrap;',
