@@ -236,8 +236,6 @@ index.html          — Pàgina d'inici (4 targetes: curs, reptes, simulador, ed
 simulador.html      — Simulador lliure i simulador incrustat als iframes del curs.
 style.css           — ~698 línies. Sense zombies des de la neteja (Categoria C).
 edit-mapa.html      — Editor visual de mapes (eina auxiliar, no és part del curs).
-editor-reptes.jsx   — Eina d'autoria externa (component React per editar textos dels reptes).
-                      Cap pàgina del web no la carrega.
 
 js/constants.js     — Namespace K, SVG assets, DIRS, CMD_ACTIONS, COND_ACTIONS,
                       SPEED_DELAYS, DEFAULT_CSV, DEFAULT_CODE, escHtml/sanitizeHtml.
