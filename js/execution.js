@@ -154,6 +154,13 @@ function runProgram() {
 
 function stepProgram() {
   const S = K.state;
+  // Si s'està executant de manera contínua, «Pas» fa una pausa
+  if (S.running && !S.stepMode) {
+    if (S.tickTimer) { clearTimeout(S.tickTimer); S.tickTimer = null; }
+    S.stepMode = true;
+    K.setStateUI('step');
+    return;
+  }
   if (!S.running && !S.interpreter) {
     notifyClearFeedback();
     restoreInitialWorld();
@@ -165,6 +172,15 @@ function stepProgram() {
     K.log(K.t('log.step_mode'), 'ok');
   }
   doStep();
+}
+
+// Des del mode pas a pas, continua l'execució contínua
+function continueProgram() {
+  const S = K.state;
+  if (!S.running || !S.stepMode || !S.interpreter) return;
+  S.stepMode = false;
+  K.setStateUI('running');
+  S.tickTimer = setTimeout(tick, S.stepDelay);
 }
 
 function _finishProgram() {
@@ -304,6 +320,7 @@ K.applyCommand        = applyCommand;
 K.execAction          = execAction;
 K.runProgram          = runProgram;
 K.stepProgram         = stepProgram;
+K.continueProgram     = continueProgram;
 K.stopProgram         = stopProgram;
 K.resetKarel          = resetKarel;
 K.restoreInitialWorld = restoreInitialWorld;

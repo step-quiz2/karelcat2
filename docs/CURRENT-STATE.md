@@ -26,20 +26,23 @@ funcions d'en Karel).
 
 ## 2. Estat del curs — completat al 100 %
 
-### 2.1 Capítols (10/10 escrits)
+### 2.1 Capítols (10 + epíleg)
+
+Els títols coincideixen amb `CAPITOLS_DATA` (`curs/capitols.js`) i amb el `<h1>` de cada pàgina.
 
 | # | Fitxer | Títol | Conceptes nous |
 |---|--------|-------|----------------|
 | 1 | `curs/capitol-1.html` | Coneix en Karel | `move()`, `turn_left()`, `turn_right()`. Món, graella, direccions. |
-| 2 | `curs/capitol-2.html` | Agafa i deixa | `grab()`, `drop()`, motxilla, `pearl_here()`. Errors. |
-| 3 | `curs/capitol-3.html` | Repeteix | `for _ in range(N):`, indentació, blocs. |
-| 4 | `curs/capitol-4.html` | Procediments | `def nom():`. Crear ordres noves. |
-| 5 | `curs/capitol-5.html` | Descomposició | Cap sintaxi nova. Mètode top-down. Pre/postcondicions. |
-| 6 | `curs/capitol-6.html` | Condicionals | `if cond():` / `else:`. |
-| 7 | `curs/capitol-7.html` | Mentre | `while cond():`. Error de límit. |
-| 8 | `curs/capitol-8.html` | Combinant condicions | `not`, `and`, `or`. |
-| 9 | `curs/capitol-9.html` | Resum | `turn_around()`, `left_is_clear()`, `right_is_clear()`, `elif`, `break`, `True`/`False`. |
-| 10 | `curs/capitol-10.html` | D'en Karel al Python | Epíleg. Pont al món real. Cap simulador. |
+| 2 | `curs/capitol-2.html` | Recollir i deixar | `grab()`, `drop()`, motxilla. |
+| 3 | `curs/capitol-3.html` | Gestió d'errors en un codi | Errors de sintaxi i errors d'execució. |
+| 4 | `curs/capitol-4.html` | Repeteix | `for i in range(N):`, indentació, blocs. |
+| 5 | `curs/capitol-5.html` | Funcions | `def nom():`. Crear instruccions noves. |
+| 6 | `curs/capitol-6.html` | Descomposició | Cap sintaxi nova. Dividir un problema en fases. |
+| 7 | `curs/capitol-7.html` | Condicionals | `if cond():` / `else:`, condicions. |
+| 8 | `curs/capitol-8.html` | Mentre | `while cond():`. |
+| 9 | `curs/capitol-9.html` | Combinant condicions | `not`, `and`, `or`. |
+| 10 | `curs/capitol-10.html` | Codi net | DRY, noms que expliquen, una funció = una idea. |
+| — | `curs/capitol-futur.html` | D'en Karel al Python | Epíleg: pre/postcondicions, pont al Python real. |
 
 Tots els capítols estan llistats a `DISPONIBLES` a `curs/index.html`.
 
@@ -81,8 +84,10 @@ move()  turn_left()  turn_right()  turn_around()  grab()  drop()
 front_is_clear()    front_is_blocked()
 left_is_clear()     left_is_blocked()
 right_is_clear()    right_is_blocked()
-pearl_here()        bag_is_empty()      bag_is_full()
+pearl_here()        bag_is_empty()      bag_has_pearls()
 ```
+*(`bag_is_full()` és el nom antic de `bag_has_pearls()`: es continua acceptant, però no surt
+al glossari ni a l'autocompletat, perquè en anglès *full* vol dir «plena».)*
 
 ### Literals booleans
 ```
@@ -231,6 +236,8 @@ index.html          — Pàgina d'inici (4 targetes: curs, reptes, simulador, ed
 simulador.html      — Simulador lliure i simulador incrustat als iframes del curs.
 style.css           — ~698 línies. Sense zombies des de la neteja (Categoria C).
 edit-mapa.html      — Editor visual de mapes (eina auxiliar, no és part del curs).
+editor-reptes.jsx   — Eina d'autoria externa (component React per editar textos dels reptes).
+                      Cap pàgina del web no la carrega.
 
 js/constants.js     — Namespace K, SVG assets, DIRS, CMD_ACTIONS, COND_ACTIONS,
                       SPEED_DELAYS, DEFAULT_CSV, DEFAULT_CODE, escHtml/sanitizeHtml.
@@ -254,7 +261,12 @@ js/world.js         — K.parseCSV (split per |, K>A), K.parseGoal, K.compareGoa
                       K.evalCond (inclou left/right), K.worldToCSV, K.currentStateToCSV.
 js/renderer.js      — K.renderWorld (diferencial), K.renderWorldFull, K.updateStatus.
 js/editor.js        — Ressaltat sintàctic, numeració de línies, marca d'error,
-                      autocompletat (Tab).
+                      autocompletat (Tab/Enter; afegeix els parèntesis), indentació
+                      automàtica en prémer Enter (+4 espais després de ':'), Tab i
+                      Maj+Tab per indentar/desindentar, retrocés que esborra un nivell.
+                      K.editText manté l'historial de desfer (Ctrl+Z).
+js/kbd-accessory.js — Barra de tecles tàctil a sota de l'editor (només pantalles tàctils):
+                      ⇥ ⇤ ( ) : _ # i les instruccions i paraules clau més habituals.
 js/ui.js            — K.log, K.logError, K.setStateUI, K.updateUI,
                       K.initSpeedSlider, K.handleRunClick, K.toggleTheme, K.initTheme.
 js/main.js          — IIFE d'inicialització. Llegeix URL params, connecta mòduls.
@@ -411,7 +423,7 @@ Hi ha dos tipus d'errors diferenciats:
 - `_runtimeError` crida `stopProgram()` i després `K.logError`, `K.markErrorLine`,
   `K.setStateUI('error')` (en aquest ordre, perquè la línia de l'error quedi marcada) i
   avisa la pàgina del curs (`karel-result` amb `error: true`).
-- Errors de runtime possibles: `'rock'` (xoc), `'no_pearl'` (grab sense perla), `'bag_empty'` (drop sense perles a la motxilla), `'inf_loop'` (while amb guard > 50000), `'too_many'` (range > 10.000), `'deep_rec'` (callDepth > 50), `'proc_undef'` (no hauria de passar: el parser ja ho comprova). `K.runHeadless` afegeix `'too_long'` (més de 100.000 accions).
+- Errors de runtime possibles: `'rock'` (xoc), `'no_pearl'` (grab sense perla), `'bag_empty'` (drop sense perles a la motxilla), `'inf_loop'` (un `while` que no acabarà mai: es detecta **exactament i al moment** quan, a l'inici de dues voltes del mateix `while`, el món és idèntic — posició, direcció, motxilla i perles —; com que no hi ha variables, el programa repetiria el mateix per sempre. Com a salvaguarda, també a les 50.000 voltes), `'too_many'` (range > 10.000), `'deep_rec'` (callDepth > 50), `'proc_undef'` (no hauria de passar: el parser ja ho comprova). `K.runHeadless` afegeix `'too_long'` (més de 100.000 accions).
 
 **Important**: els errors de runtime *no llancen excepcions JS*. Si modifiques l'intèrpret o l'executor, usa sempre el mecanisme de `yield { type:'error' }` / `errStop`, no `throw`. Llançar dins d'un generador que és consumit per `tick()` provocaria una excepció no capturada.
 
@@ -419,8 +431,14 @@ Hi ha dos tipus d'errors diferenciats:
 
 ## 9. Interfície (disseny Stanford)
 
-- **Fila 1 (topbar):** logo medusa + «Karel», badge d'estat (dot + text), motxilla, botó tema.
-- **Fila 2 (toolbar):** botó mutant Executa↔Atura + botó Reinicia + slider velocitat.
+- **Fila 1 (topbar):** logo medusa + «Karel», navegació, glossari, botó tema. (Al curs, dins dels iframes, no es mostra.)
+- **Fila 2 (toolbar):** botó mutant Executa → Atura (mentre corre) → Continua (en mode pas a pas),
+  **⏭ Pas** (executa una instrucció; si el programa corre, el posa en pausa), Reinicia, slider de velocitat
+  i **Motxilla** (sempre visible). Als exercicis del curs, a més: «✓ Comprova tots els mons»
+  (reptes), «⟲ Codi inicial» i «✕ Surt» (quan l'iframe és a pantalla completa).
+- **Barra de tecles** (només pantalles tàctils): a sota de l'editor.
+- **Pantalla completa:** a les pàgines del curs, cada exercici té el botó «⛶ Pantalla completa».
+- **Peu de pàgina** (`footer.js`): no és fix, és l'última fila; contingut CC BY-NC-SA 4.0, codi MIT.
 - **Zona principal:** editor de codi (esquerra, 50%) + món de Karel (dreta, 50%).
 - **Log:** sota l'editor, es buida automàticament a cada execució.
 - **Eliminats definitivament:** modals, menú hamburguesa, selectors d'idioma, panells de pistes/referència, editor de mapes integrat, onboarding.
@@ -472,8 +490,7 @@ El codi només es desa a localStorage al simulador lliure (clau `karel-code-v3`)
 | # | Tasca | Detall |
 |---|-------|--------|
 | D.1 | Perla en mode clar | El SVG de la perla té píxels blancs purs que desapareixen sobre fons blanc. Revisar el sprite. |
-| D.2 | Emoji motxilla | Decidir si afegir ⚪ al costat del comptador numèric. |
-| D.3 | Responsive mòbil | Verificar les mediaqueries (820px, 600px) amb el layout 50/50. |
+| D.3 | Responsive mòbil | El mòbil no és prioritari (massa informació). Portàtil i tauleta sí: fet (vegeu secció 9). |
 | D.4 | Favicon | Afegir la medusa rosa com a favicon de la pàgina. |
 
 ### Categoria E — Funcionalitat futura (prioritat baixa)
@@ -573,4 +590,4 @@ l'acció `.github/workflows/comprova-curs.yml` l'executa a cada push.
 
 ---
 
-*Última actualització: nou parser amb indentació de Python i errors clars; verificador que mira la casella de sota en Karel, amb objectius sense K, opcions i alternatives; reptes 5, 7, 8, 9, 10, 12 i 13 corregits (i objectius dels reptes 2, 6, 11 i dels capítols 1, 2, 4, 6); invalidació dels mons per empremta del codi i botó «Comprova tots els mons»; codi de l'alumne desat per exercici; test automàtic `tests/comprova-curs.js`.*
+*Última actualització: millores per a portàtil i tauleta (indentació automàtica, barra de tecles tàctil, pantalla completa, botó Pas, motxilla visible, botons grans, simulador que omple l'iframe), detecció exacta de bucles infinits, `bag_has_pearls()`, textos del glossari i dels capítols 7, 8 i 10, objectius dels reptes 4, 6 i 11, peu de pàgina no fix amb la llicència correcta, capítol 3 disponible a l'índex. Abans: nou parser, verificador, reptes corregits i test automàtic.*

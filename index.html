@@ -23,7 +23,7 @@
   </script>
 
   <title>Karel — aprèn a programar</title>
-  <meta name="description" content="Karel: un robot, un món de quadres, i el primer pas per aprendre a programar.">
+  <meta name="description" content="Karel: una medusa programable, un món de caselles i el primer pas per aprendre a programar en Python.">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -306,7 +306,7 @@
     <section class="hero" aria-label="Karel: aprèn a programar">
 
       <!-- Mini món animat (top-left) -->
-      <div class="hero-world" role="img" aria-label="Animació: en Karel recorre un món 3×3, recull una perla i torna al punt de partida.">
+      <div class="hero-world" role="img" aria-label="Animació: en Karel recorre un món 3×3, recull una perla, torna al punt de partida i hi deixa la perla.">
         <div class="mini-world" id="miniWorld"></div>
       </div>
 
@@ -382,33 +382,34 @@
 
     const ROCKS = new Set(['0,1']); // files×columnes amb roca (no canvien)
 
-    // Seqüència d'estats: {kr=fila karel, kc=col karel, kd=direcció, pearl=visible}
+    // Seqüència d'estats: {kr=fila karel, kc=col karel, kd=direcció, p=[fila,col] de la perla o null}
     // Karel fa un recorregut en L: est per la fila 2, nord per la col 2,
-    // recull la perla, torna, i la deixa de nou.
+    // recull la perla (grab), torna a casa i la deixa on és ell (drop).
+    // Després el món es reinicia: la perla torna a aparèixer a dalt.
     const STEPS = [
-      { kr:2, kc:0, kd:'right',  pearl:true,  onPearl:false }, // 0  inici
-      { kr:2, kc:1, kd:'right',  pearl:true,  onPearl:false }, // 1  → est
-      { kr:2, kc:2, kd:'right',  pearl:true,  onPearl:false }, // 2  → est
-      { kr:2, kc:2, kd:'top',    pearl:true,  onPearl:false }, // 3  gira nord
-      { kr:1, kc:2, kd:'top',    pearl:true,  onPearl:false }, // 4  ↑ nord
-      { kr:0, kc:2, kd:'top',    pearl:true,  onPearl:true  }, // 5  ↑ arriba: medusa + perla
-      { kr:0, kc:2, kd:'top',    pearl:false, onPearl:false }, // 6  GRAB: perla desapareix
-      { kr:0, kc:2, kd:'bottom', pearl:false, onPearl:false }, // 7  gira sud
-      { kr:1, kc:2, kd:'bottom', pearl:false, onPearl:false }, // 8  ↓ sud
-      { kr:2, kc:2, kd:'bottom', pearl:false, onPearl:false }, // 9  ↓ sud
-      { kr:2, kc:2, kd:'left',   pearl:false, onPearl:false }, // 10 gira oest
-      { kr:2, kc:1, kd:'left',   pearl:false, onPearl:false }, // 11 ← oest
-      { kr:2, kc:0, kd:'left',   pearl:false, onPearl:false }, // 12 ← oest
-      { kr:2, kc:0, kd:'right',  pearl:true,  onPearl:false }, // 13 DEIXA perla + gira est → loop
+      { kr:2, kc:0, kd:'right',  p:[0,2] }, // 0  inici
+      { kr:2, kc:1, kd:'right',  p:[0,2] }, // 1  → est
+      { kr:2, kc:2, kd:'right',  p:[0,2] }, // 2  → est
+      { kr:2, kc:2, kd:'top',    p:[0,2] }, // 3  gira nord
+      { kr:1, kc:2, kd:'top',    p:[0,2] }, // 4  ↑ nord
+      { kr:0, kc:2, kd:'top',    p:[0,2] }, // 5  ↑ arriba: medusa damunt la perla
+      { kr:0, kc:2, kd:'top',    p:null  }, // 6  grab(): la perla va a la motxilla
+      { kr:0, kc:2, kd:'bottom', p:null  }, // 7  gira sud
+      { kr:1, kc:2, kd:'bottom', p:null  }, // 8  ↓ sud
+      { kr:2, kc:2, kd:'bottom', p:null  }, // 9  ↓ sud
+      { kr:2, kc:2, kd:'left',   p:null  }, // 10 gira oest
+      { kr:2, kc:1, kd:'left',   p:null  }, // 11 ← oest
+      { kr:2, kc:0, kd:'left',   p:null  }, // 12 ← oest
+      { kr:2, kc:0, kd:'left',   p:[2,0] }, // 13 drop(): la perla queda a la casella d'en Karel
+      { kr:2, kc:0, kd:'right',  p:[2,0] }, // 14 gira est → el món es reinicia
     ];
 
-    // Pearl home position
-    const PEARL_ROW = 0, PEARL_COL = 2;
+    const samePos = (a, b) => !!a && !!b && a[0] === b[0] && a[1] === b[1];
 
     function renderWorld(stepIdx) {
       const s     = STEPS[stepIdx];
       const prevS = STEPS[(stepIdx - 1 + STEPS.length) % STEPS.length];
-      const pearlJustReturned = s.pearl && !prevS.pearl;
+      const pearlJustReturned = !!s.p && !samePos(s.p, prevS.p);
 
       const grid = document.getElementById('miniWorld');
       grid.innerHTML = '';
@@ -420,8 +421,8 @@
 
           const isKarel   = (r === s.kr && c === s.kc);
           const isRock    = ROCKS.has(`${r},${c}`);
-          const isPearl   = s.pearl && r === PEARL_ROW && c === PEARL_COL;
-          const isOverlap = isKarel && s.onPearl && r === PEARL_ROW && c === PEARL_COL;
+          const isPearl   = samePos(s.p, [r, c]);
+          const isOverlap = isKarel && isPearl;
 
           if (isRock) {
             cell.innerHTML = SVG_ROCK;
